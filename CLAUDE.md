@@ -37,4 +37,6 @@ python3 -m tools.render guard-android    # write the marked blocks into that app
 python3 -m tools.fdroid_status           # refresh F-Droid states in apps.yml
 ```
 
+graph-loop builds the specs in `docs/lean/` one per run; its profile is [profile-python.md](profile-python.md).
+
 App checkouts live in `~/0-projects/<checkout>` (the `checkout` field in `apps.yml`).
