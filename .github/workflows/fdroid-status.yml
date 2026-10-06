@@ -1,0 +1,28 @@
+name: F-Droid status
+on:
+  schedule: [{cron: "17 6 * * *"}]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: python3 -m venv .venv && .venv/bin/pip install --quiet "PyYAML>=6"
+      - run: .venv/bin/python -m tools.fdroid_status
+      - name: Open a PR when an app went live
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet apps.yml; then echo "no change"; exit 0; fi
+          branch="fdroid-status/refresh"
+          git config user.name "cocode-apps bot"
+          git config user.email "bb@cocode.dk"
+          git switch -C "$branch"
+          git commit -am "chore: mark apps live on F-Droid"
+          git push --force -u origin "$branch"
+          if [ "$(gh pr list --head "$branch" --state open --json number --jq length)" = "0" ]; then
+            gh pr create --fill --body "f-droid.org now lists these apps. Merge, then run \`python3 -m tools.render <app>\` for each app and \`python3 -m tools.render --catalogue\` for cocode.dk, and open their PRs."
+          fi
