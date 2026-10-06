@@ -72,7 +72,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.catalogue:
         from tools import catalogue  # here, not at the top: catalogue imports this module
 
-        for line in catalogue.apply_catalogue(load(), catalogue.CATALOGUE_FILE, write=not args.dry_run):
+        files = (catalogue.CATALOGUE_FILE, catalogue.WORKS_FILE)
+        for line in catalogue.apply_all(load(), files, write=not args.dry_run):
             print(line)
         return 0
     if not args.app:
