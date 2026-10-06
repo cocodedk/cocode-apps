@@ -18,7 +18,7 @@ def _obtainium(app: App) -> str:
 def install_html(app: App, lang: str) -> str:
     t = TEXT[lang]
     if app.fdroid_live:
-        first = (f'<a class="fdroid" href="{app.fdroid_url}"><img src="/{BADGE_FILE.format(lang=lang)}" '
+        first = (f'<a class="fdroid" href="{app.fdroid_url}"><img src="{app.base}{BADGE_FILE.format(lang=lang)}" '
                  f'alt="{escape(t["badge_alt"])}" width="240" height="93"></a>')
     else:
         first = f'<p class="fdroid-soon">{escape(t["coming"])}</p>'
@@ -42,25 +42,33 @@ def install_md(app: App, lang: str) -> str:
     return "\n".join(lines)
 
 
-def nav_html(app: App, lang: str) -> str:
+def nav_html(app: App, lang: str, current: str = "home") -> str:
     t, other = TEXT[lang], _other(app, lang)
-    home = app.home(lang)
+    home = app.href(lang)
     name = app.name_en if lang == "en" else app.name_da
+
+    def link(key: str, attrs: str, label: str) -> str:
+        page = ' aria-current="page"' if key == current else ""
+        return f'  <a {attrs} data-nav="{key}"{page}>{label}</a>\n'
+
+    icon = f'<img src="{app.base}img/icon.png" alt="" width="32" height="32">'
     return (
+        f'<link rel="stylesheet" href="{app.base}css/cocode-nav.css">\n'
         f'<a class="skip" href="#main">{escape(t["skip"])}</a>\n'
         f'<nav class="cocode-nav" aria-label="{escape(name)}">\n'
-        f'  <a class="brand" href="{home}">{escape(name)}</a>\n'
-        f'  <a href="{home}#how">{escape(t["how"])}</a>\n'
-        f'  <a href="{home}#install">{escape(t["install"])}</a>\n'
-        f'  <a href="{home}privacy/">{escape(t["privacy"])}</a>\n'
-        f'  <a href="{app.home(other)}" hreflang="{other}" lang="{other}">{escape(TEXT[other]["lang_name"])}</a>\n'
-        f'  <a href="{CATALOGUE_URL}">{escape(t["more"])}</a>\n'
-        "</nav>"
+        + link("home", f'class="brand" href="{home}"', icon + escape(name))
+        + link("how", f'href="{home}#how"', escape(t["how"]))
+        + link("install", f'href="{home}#install"', escape(t["install"]))
+        + link("privacy", f'href="{home}privacy/"', escape(t["privacy"]))
+        + link("lang", f'href="{app.href(other)}" hreflang="{other}" lang="{other}"',
+               escape(TEXT[other]["lang_name"]))
+        + link("more", f'href="{CATALOGUE_URL}"', escape(t["more"]))
+        + "</nav>"
     )
 
 
 def footer_html(app: App, lang: str) -> str:
-    t, home = TEXT[lang], app.home(lang)
+    t, home = TEXT[lang], app.href(lang)
     return (
         '<footer class="cocode-footer">\n'
         f'  <a href="https://github.com/cocodedk/{app.repo}">{escape(t["source"])}</a> ·\n'

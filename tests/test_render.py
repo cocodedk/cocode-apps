@@ -51,6 +51,28 @@ def test_no_badge_copy_on_dry_run_or_when_not_live(tmp_path):
     assert not (tmp_path / "website" / "img").exists()
 
 
+def test_write_copies_the_stylesheet_even_when_not_live(tmp_path):
+    soon = parse({"apps": [{**BASE, "fdroid": "none"}]})[0]
+    apply(soon, tmp_path)
+    css = tmp_path / "website" / "css" / "cocode-nav.css"
+    assert css.is_file() and ".cocode-nav" in css.read_text()
+
+
+def test_dry_run_copies_no_stylesheet(tmp_path):
+    apply(parse({"apps": [BASE]})[0], tmp_path, write=False)
+    assert not (tmp_path / "website").exists()
+
+
+def test_privacy_page_gets_the_nav_with_aria_current_on_privacy(tmp_path):
+    app = parse({"apps": [BASE]})[0]
+    page = tmp_path / "website" / "privacy" / "index.html"
+    page.parent.mkdir(parents=True)
+    page.write_text("<!-- cocode-apps:nav:start --><!-- cocode-apps:nav:end -->")
+    apply(app, tmp_path)
+    html = page.read_text()
+    assert html.count('aria-current="page"') == 1 and 'data-nav="privacy" aria-current="page"' in html
+
+
 def test_catalogue_flag_needs_no_app(monkeypatch, tmp_path):
     from tools import catalogue
     from tools.render import main

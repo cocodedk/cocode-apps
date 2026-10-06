@@ -27,6 +27,21 @@ def test_home_paths_follow_default_language():
     assert app.home("da") == "/" and app.home("en") == "/en/"
 
 
+def test_base_and_href_for_a_root_site():
+    app = one()
+    assert app.base == "/"
+    assert (app.href("da"), app.href("en")) == ("/", "/en/")
+
+
+def test_base_and_href_for_a_sub_path_site():
+    site = "https://cocodedk.github.io/Claude-Email-App"
+    en, da = one(site=site, default_language="en"), one(site=site, default_language="da")
+    assert en.base == "/Claude-Email-App/"
+    assert (en.href("en"), en.href("da")) == ("/Claude-Email-App/", "/Claude-Email-App/da/")
+    assert (da.href("da"), da.href("en")) == ("/Claude-Email-App/", "/Claude-Email-App/en/")
+    assert en.home("da") == "/da/"
+
+
 def test_private_app_keeps_name_only():
     app = parse({"apps": [{"id": "secret", "name": {"en": "S", "da": "S"}, "private": True}]})[0]
     assert app.private and app.repo == ""

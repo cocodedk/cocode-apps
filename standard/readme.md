@@ -17,8 +17,9 @@ License.
 
 - `check_readme` in `tools/checks/repo.py`: the README exists and carries the install marker
   (`cocode-apps:install:start`).
-- Checked by hand: the one-line description, the screenshots, the privacy summary and link, and the
-  section order.
+- `check_readme` also checks the level-2 headings: `Features`, `Privacy`, `Build`, `Contributing`,
+  `License`, in that order.
+- Checked by hand: the one-line description, the screenshots, and the privacy summary and link.
 
 ## Example
 

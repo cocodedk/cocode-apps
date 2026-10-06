@@ -20,8 +20,10 @@
 
 - `check_site` in `tools/checks/web.py`: `/privacy/` answers 200 in both languages.
 - `check_inapp` in `tools/checks/repo.py`: the app links the privacy URL from `apps.yml`.
-- Checked by hand: the nine headings and their order, that every contacted server is listed, the
-  `privacy.html` redirect, and the package and app names.
+- `check_site` also checks that `privacy.html` redirects to `/privacy/` (a 404, a meta refresh, or the
+  standard privacy page).
+- Checked by hand: the nine headings and their order, that every contacted server is listed, and the
+  package and app names.
 
 ## Example
 
