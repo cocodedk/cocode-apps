@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import datetime
 from pathlib import Path
 
@@ -15,11 +16,12 @@ from tools.registry import ROOT, App, find, load
 PROJECTS = Path.home() / "0-projects"
 
 
-def audit_app(app: App, fetch: Fetch, projects: Path) -> list[Gap]:
+def audit_app(app: App, fetch: Fetch, projects: Path, root: Path | None = None) -> list[Gap]:
+    """`root` replaces the app's checkout (a worktree, say) for the repository checks."""
     if app.private:
         return []
     return (check_site(app, fetch) + check_release(app, fetch) + check_fdroid(app, fetch)
-            + check_repo(app, projects / app.checkout)
+            + check_repo(app, root or projects / app.checkout)
             + check_catalogue(app, [projects / "cocodedk" / "templates" / "partials" / name
                                     for name in ("catalogue.html", "works.html")]))
 
@@ -46,10 +48,16 @@ def _today() -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Audit Cocode apps against the standard.")
     parser.add_argument("app", help="an app id, or 'all'")
+    parser.add_argument("--root", type=Path, help="one app only: audit this folder instead of its checkout")
+    parser.add_argument("--site", help="one app only: check the site at this address (a local server, say)")
     args = parser.parse_args(argv)
+    if args.app == "all" and (args.root or args.site):
+        parser.error("--root and --site need one app, not 'all'")
     apps = load()
     chosen = apps if args.app == "all" else [find(apps, args.app)]
-    gaps = {app.id: audit_app(app, real_fetch, PROJECTS) for app in chosen}
+    if args.site:
+        chosen = [dataclasses.replace(chosen[0], site=args.site.rstrip("/"))]
+    gaps = {app.id: audit_app(app, real_fetch, PROJECTS, args.root) for app in chosen}
     for app_id, found in gaps.items():
         print(f"{app_id}: {len(found)} gap(s)")
         for g in found:

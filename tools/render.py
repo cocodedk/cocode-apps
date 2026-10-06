@@ -67,6 +67,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Write cocode-apps blocks into an app checkout.")
     parser.add_argument("app", nargs="?")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--root", type=Path, help="write into this folder (a worktree, say) instead of the checkout")
     parser.add_argument("--catalogue", action="store_true", help="fill the cocode.dk catalogue links")
     args = parser.parse_args(argv)
     if args.catalogue:
@@ -82,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     if app.private:
         print(f"{app.id}: private, skipped")
         return 0
-    for line in apply(app, PROJECTS / app.checkout, write=not args.dry_run):
+    for line in apply(app, args.root or PROJECTS / app.checkout, write=not args.dry_run):
         print(line)
     return 0
 
