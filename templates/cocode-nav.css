@@ -20,7 +20,16 @@
 
 .cocode-nav .brand {
   flex: 1 0 100%;
+  justify-content: flex-start;
   gap: 0.5rem;
+}
+
+/* Wide screens: one row, the name on the left and the links after it. */
+@media (min-width: 48em) {
+  .cocode-nav .brand {
+    flex: 0 1 auto;
+    margin-right: auto;
+  }
 }
 
 .cocode-nav a,

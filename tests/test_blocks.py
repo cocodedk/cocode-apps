@@ -81,6 +81,8 @@ def test_stylesheet_sizes_wraps_and_shows_the_skip_link():
         assert prop in targets
     assert "flex-wrap: wrap" in rules[".cocode-nav"] and "display: flex" in rules[".cocode-nav"]
     assert "flex: 1 0 100%" in rules[".cocode-nav .brand"]
+    assert "justify-content: flex-start" in rules[".cocode-nav .brand"]
+    assert "@media (min-width: 48em)" in rules  # one row on wide screens
     assert re.search(r"left:\s*-\d{4,}px", rules[".skip"])
     assert re.search(r"left:\s*0\b", rules[".skip:focus"])
 
