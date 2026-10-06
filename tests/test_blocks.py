@@ -6,6 +6,7 @@ from tools.registry import load, parse
 
 BASE = {"id": "demo", "name": {"en": "Demo", "da": "Demo"}, "repo": "demo-android", "checkout": "d",
         "applicationId": "dk.cocode.demo", "site": "https://demo.cocode.dk", "default_language": "da",
+        "privacy": "https://demo.cocode.dk/privacy/",
         "license": "MIT", "languages": ["en", "da"], "fdroid": "none", "apk_asset": "Demo.apk"}
 
 
@@ -112,3 +113,11 @@ def test_no_block_names_spamhaus():
         texts = [catalogue_html(a)] + [f(a, lang) for f in (install_html, install_md, nav_html, footer_html)
                                        for lang in ("en", "da")]
         assert not any("spamhaus" in text.lower() for text in texts), a.id
+
+
+def test_links_wait_for_their_pages():
+    plain = app(languages=["en"], privacy=None)
+    for html in (nav_html(plain, "en"), footer_html(plain, "en")):
+        assert "privacy/" not in html and 'data-nav="lang"' not in html
+    assert re.findall(r'data-nav="(\w+)"', nav_html(plain, "en")) == ["home", "how", "install", "more"]
+    assert 'data-nav="lang"' in nav_html(app(), "en") and 'data-nav="privacy"' in nav_html(app(), "en")
