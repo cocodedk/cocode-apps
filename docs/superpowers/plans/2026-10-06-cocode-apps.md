@@ -4,7 +4,7 @@
 
 **Goal:** Build the cocode-apps project — registry, standard, templates, audit/render/F-Droid-status tools, the skill — and produce the first `STATUS.md` for all 16 Cocode Android apps.
 
-**Architecture:** `apps.yml` holds app facts; `tools/registry.py` loads and validates it into `App` objects. Pure functions in `tools/blocks.py` turn an `App` into install/navigation/footer blocks; `tools/render.py` writes them between markers in app checkouts. `tools/checks/*` each test one area and return `Gap`s; `tools/audit.py` runs them and writes `STATUS.md`. All network access goes through one injectable `fetch`.
+**Architecture:** `apps.yml` holds app facts; `tools/registry.py` loads and validates it into `App` objects. Pure functions in `tools/blocks.py` turn an `App` into install/navigation/footer blocks; `tools/render.py` writes them between markers in app checkouts, and `tools/catalogue.py` writes each app's download link into the cocode.dk catalogue. `tools/checks/*` each test one area and return `Gap`s; `tools/audit.py` runs them and writes `STATUS.md`. All network access goes through one injectable `fetch`.
 
 **Tech Stack:** Python 3.12+, PyYAML, pytest (offline), ruff when installed, GitHub Actions.
 
@@ -39,6 +39,7 @@ tools/net.py                 fetch() — the only network code          (Task 5)
 tools/blocks.py              install/nav/footer/catalogue text        (Task 3)
 tools/blocks_text.py         en/da labels used by blocks.py           (Task 3)
 tools/render.py              replace_block(), apply(), CLI            (Task 4)
+tools/catalogue.py           cocode.dk catalogue download links       (Task 4b)
 tools/checks/__init__.py     Gap
 tools/checks/web.py          site, privacy, release, F-Droid checks   (Task 5)
 tools/checks/repo.py         README, fastlane, in-app checks          (Task 6)
@@ -683,6 +684,130 @@ if __name__ == "__main__":
 - [ ] **Step 4: Run** `python3 -m pytest tests/test_render.py -q` → PASS.
 - [ ] **Step 5: Commit** — `git commit -am "feat: render shared blocks between markers in an app checkout"` (add the new files first).
 
+### Task 4b: Render the cocode.dk catalogue (`tools/catalogue.py`)
+
+The owner asked for every app's F-Droid download link on cocode.dk; the spec says each catalogue entry
+links to F-Droid when the app is live, to its GitHub APK until then, written from `apps.yml`. cocode.dk
+is Danish only and lives in `~/0-projects/cocodedk`; its entries are in
+`templates/partials/catalogue.html`, one `<li>` per app ending in
+`<a class="index__link" href="<site>">…</a>`.
+
+**Files:** Create `tools/catalogue.py`; Test `tests/test_catalogue.py`; Modify `tools/render.py` (a
+`--catalogue` flag) and `tests/test_render.py`.
+
+**Interfaces — Consumes:** `App`, `load` (Task 2); `catalogue_link` (Task 3); `replace_block` (Task 4); `Gap` (Task 5 — create `tools/checks/__init__.py` from Task 5 Step 3 now if it is still empty).
+**Produces:**
+```python
+CATALOGUE_FILE = Path.home() / "0-projects/cocodedk/templates/partials/catalogue.html"
+def catalogue_html(app: App) -> str          # the download link for one entry (Danish)
+def apply_catalogue(apps: list[App], path: Path, write: bool = True) -> list[str]   # report lines
+def check_catalogue(app: App, path: Path) -> list[Gap]                               # used by Task 7
+```
+Each public app's `<li>` carries a marker pair named `get-<id>` (for example
+`<!-- cocode-apps:get-guard-android:start --><!-- cocode-apps:get-guard-android:end -->`) right after
+its `index__link`. The markers are added once by hand in a cocodedk PR (with a CSS rule for
+`.index__get` matching `.index__link`, and cocodedk's own tests run). That PR needs the owner's OK like
+every other push; this task only writes the code that fills them.
+
+- [ ] **Step 1: Write the failing tests** (`tests/test_catalogue.py`)
+
+```python
+from tools.catalogue import apply_catalogue, catalogue_html, check_catalogue
+from tools.registry import parse
+
+BASE = {"id": "demo", "name": {"en": "Demo", "da": "Demo"}, "repo": "demo-android", "checkout": "demo",
+        "applicationId": "dk.cocode.demo", "site": "https://demo.cocode.dk", "license": "MIT",
+        "languages": ["en", "da"], "fdroid": "live", "apk_asset": "Demo.apk"}
+SECRET = {"id": "secret", "name": {"en": "S", "da": "S"}, "private": True}
+S, E = "<!-- cocode-apps:get-demo:start -->", "<!-- cocode-apps:get-demo:end -->"
+
+
+def apps(**over):
+    return parse({"apps": [{**BASE, **over}, SECRET]})
+
+
+def test_live_app_links_fdroid_in_danish():
+    html = catalogue_html(apps()[0])
+    assert 'href="https://f-droid.org/packages/dk.cocode.demo/"' in html and "Hent på F-Droid" in html
+
+
+def test_app_not_on_fdroid_links_the_apk():
+    html = catalogue_html(apps(fdroid="mr:3")[0])
+    assert "releases/latest/download/Demo.apk" in html and "Hent APK" in html and "f-droid" not in html
+
+
+def test_apply_fills_markers_and_skips_private_apps(tmp_path):
+    page = tmp_path / "catalogue.html"
+    page.write_text(f"<li>Demo {S}{E}</li>")
+    report = apply_catalogue(apps(), page)
+    assert "Hent på F-Droid" in page.read_text()
+    assert not any("secret" in line for line in report)
+
+
+def test_missing_marker_is_reported_and_is_an_audit_gap(tmp_path):
+    page = tmp_path / "catalogue.html"
+    page.write_text("<li>Demo</li>")
+    assert any("missing" in line for line in apply_catalogue(apps(), page))
+    assert "cocode.dk" in check_catalogue(apps()[0], page)[0].message
+```
+
+- [ ] **Step 2: Run** → FAIL.
+
+- [ ] **Step 3: Implement `tools/catalogue.py`**
+
+```python
+"""The download link in each cocode.dk catalogue entry, written from apps.yml (Danish site)."""
+from html import escape
+from pathlib import Path
+
+from tools.blocks import catalogue_link
+from tools.checks import Gap
+from tools.registry import App
+from tools.render import replace_block
+
+CATALOGUE_FILE = Path.home() / "0-projects" / "cocodedk" / "templates" / "partials" / "catalogue.html"
+
+
+def catalogue_html(app: App) -> str:
+    label = "Hent på F-Droid" if app.fdroid_live else "Hent APK"
+    return f'<a class="index__get" href="{escape(catalogue_link(app))}">{label}</a>'
+
+
+def apply_catalogue(apps: list[App], path: Path, write: bool = True) -> list[str]:
+    text, report = path.read_text("utf-8"), []
+    for app in apps:
+        if app.private:
+            continue
+        text, state = replace_block(text, f"get-{app.id}", catalogue_html(app))
+        report.append(f"cocode.dk catalogue [{app.id}]: {state}")
+    if write:
+        path.write_text(text, "utf-8")
+    return report
+
+
+def check_catalogue(app: App, path: Path) -> list[Gap]:
+    if app.private:
+        return []
+    if not path.is_file() or f"cocode-apps:get-{app.id}:start" not in path.read_text("utf-8"):
+        return [Gap(app.id, "cocode.dk", "the cocode.dk catalogue entry has no download link (marker get-<id>)")]
+    return []
+```
+
+- [ ] **Step 4: Wire the CLI** — in `tools/render.py` `main`, make `app` optional (`parser.add_argument("app", nargs="?")`) and add `parser.add_argument("--catalogue", action="store_true", help="fill the cocode.dk catalogue links")`. When `--catalogue` is set, import `tools.catalogue` inside `main` (avoids a circular import), print each line of `catalogue.apply_catalogue(load(), catalogue.CATALOGUE_FILE, write=not args.dry_run)`, and return 0. Add to `tests/test_render.py`:
+
+```python
+def test_catalogue_flag_needs_no_app(monkeypatch, tmp_path):
+    import tools.catalogue as catalogue
+    from tools.render import main
+    page = tmp_path / "catalogue.html"
+    page.write_text("<li></li>")
+    monkeypatch.setattr(catalogue, "CATALOGUE_FILE", page)
+    assert main(["--catalogue", "--dry-run"]) == 0
+```
+
+- [ ] **Step 5: Run** `python3 -m pytest tests/test_catalogue.py tests/test_render.py -q` → PASS.
+- [ ] **Step 6: Commit** — `git add tools/catalogue.py tools/render.py tests/test_catalogue.py tests/test_render.py && git commit -m "feat: write each app's download link into the cocode.dk catalogue"`.
+
 ### Task 5: Network fetch and web checks (`tools/net.py`, `tools/checks/web.py`)
 
 **Files:** Create `tools/net.py`, fill `tools/checks/__init__.py`, create `tools/checks/web.py`; Test `tests/test_checks_web.py`.
@@ -1006,7 +1131,7 @@ def check_repo(app: App, root: Path) -> list[Gap]:
 
 **Files:** Create `tools/audit.py`; Test `tests/test_audit.py`; generated `STATUS.md`.
 
-**Interfaces — Consumes:** `load`, `find`, `App` (Task 2); `check_site`, `check_release`, `check_fdroid` (Task 5); `check_repo` (Task 6); `fetch` (Task 5). **Produces:**
+**Interfaces — Consumes:** `load`, `find`, `App` (Task 2); `check_catalogue` (Task 4b); `check_site`, `check_release`, `check_fdroid` (Task 5); `check_repo` (Task 6); `fetch` (Task 5). **Produces:**
 ```python
 def audit_app(app: App, fetch: Fetch, projects: Path) -> list[Gap]
 def status_markdown(apps: list[App], gaps: dict[str, list[Gap]], date: str) -> str
@@ -1044,7 +1169,7 @@ def test_audit_app_collects_web_and_repo_gaps(tmp_path):
     app = parse({"apps": [BASE]})[0]
     gaps = audit_app(app, lambda url: (0, ""), tmp_path)
     areas = {g.area for g in gaps}
-    assert {"site", "release", "repo"} <= areas
+    assert {"site", "release", "repo", "cocode.dk"} <= areas
 ```
 
 - [ ] **Step 2: Run** → FAIL.
@@ -1059,6 +1184,7 @@ import argparse
 import datetime
 from pathlib import Path
 
+from tools.catalogue import check_catalogue
 from tools.checks import Fetch, Gap
 from tools.checks.repo import check_repo
 from tools.checks.web import check_fdroid, check_release, check_site
@@ -1072,7 +1198,8 @@ def audit_app(app: App, fetch: Fetch, projects: Path) -> list[Gap]:
     if app.private:
         return []
     return (check_site(app, fetch) + check_release(app, fetch) + check_fdroid(app, fetch)
-            + check_repo(app, projects / app.checkout))
+            + check_repo(app, projects / app.checkout)
+            + check_catalogue(app, projects / "cocodedk" / "templates" / "partials" / "catalogue.html"))
 
 
 def status_markdown(apps: list[App], gaps: dict[str, list[Gap]], date: str) -> str:
@@ -1210,7 +1337,7 @@ jobs:
           git switch -c "$branch"
           git commit -am "chore: mark apps live on F-Droid"
           git push -u origin "$branch"
-          gh pr create --fill --body "f-droid.org now lists these apps. Merge, then run \`python3 -m tools.render <app>\` for each and open their PRs."
+          gh pr create --fill --body "f-droid.org now lists these apps. Merge, then run \`python3 -m tools.render <app>\` for each app and \`python3 -m tools.render --catalogue\` for cocode.dk, and open their PRs."
 ```
 
 - [ ] **Step 5: Run** `python3 -m pytest tests/test_fdroid_status.py -q` → PASS.
@@ -1229,7 +1356,7 @@ jobs:
 
 **Files:** Create `skill/SKILL.md`; link it into the owner's skills.
 
-- [ ] **Step 1:** Write `skill/SKILL.md` with front matter `name: cocode-apps` and a description such as "Brings a Cocode Android app up to the shared publishing standard (About page, privacy page, F-Droid install block, navigation, README, store listing, release routine) using the cocode-apps registry, audit and render tools. Use when making an app's site, README, About page or store listing consistent with the other Cocode apps, after an app is accepted on F-Droid, or to see which apps lack what." Body: the five steps (audit → list gaps → fix → render → re-audit and follow every link), when to use `android-setup` (new project) and `fdroid-release` (submitting), the rules from `CLAUDE.md` (owner's OK before any push; private apps; never name Spamhaus in promotional text), and the commands.
+- [ ] **Step 1:** Write `skill/SKILL.md` with front matter `name: cocode-apps` and a description such as "Brings a Cocode Android app up to the shared publishing standard (About page, privacy page, F-Droid install block, navigation, README, store listing, release routine) using the cocode-apps registry, audit and render tools. Use when making an app's site, README, About page or store listing consistent with the other Cocode apps, after an app is accepted on F-Droid, or to see which apps lack what." Body: the five steps (audit → list gaps → fix → render, which includes `render.py --catalogue` so cocode.dk carries the app's F-Droid or APK download link → re-audit and follow every link), when to use `android-setup` (new project) and `fdroid-release` (submitting), the rules from `CLAUDE.md` (owner's OK before any push; private apps; never name Spamhaus in promotional text), and the commands.
 - [ ] **Step 2:** Link it: check how `~/.claude-personal/skills/fdroid-release` is installed (`ls -la ~/.claude-personal/skills/ | head`), then link the same way, e.g. `ln -s ~/0-projects/cocode-apps/skill ~/.claude-personal/skills/cocode-apps`. If the work account (`~/.claude/skills`) also links shared skills, link there too.
 - [ ] **Step 3:** Commit — `git add skill && git commit -m "feat: the cocode-apps skill"`.
 
