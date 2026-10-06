@@ -28,6 +28,11 @@ Builds on the code on `main` after specs 01–05 (`tools/registry.py`, `tools/bl
 unchanged unless this spec says otherwise. Split a file at a natural seam rather than let it pass
 200 lines.
 
+The one exception: a fixture that stands for a *complete* site or README (for example the one in
+`test_complete_site_has_no_gaps`) gains what this spec newly requires (the six `data-nav` items, the
+icon, the stylesheet, `robots.txt`, the share image, the README sections), so it still has no gaps.
+Its assertions stay as they are; only the fixture's pages and the fake `fetch`'s answers grow.
+
 ### Sites on a sub-path
 
 - `App.base` (new property): the path of `site` with a trailing slash — `"/"` for
@@ -79,9 +84,13 @@ never a crash):
 - **Share image**: the home page has `<meta property="og:image" content="…">` with an absolute
   `https://` URL that answers 200. One gap when the tag is missing, another when the image does not
   answer 200.
-- **Old privacy path**: `site + "/privacy.html"`. A 404 is fine. A 200 page must carry a meta refresh
-  whose URL ends in `privacy/` (`<meta http-equiv="refresh" content="0; url=…privacy/">`); otherwise
-  the gap is "privacy.html does not redirect to /privacy/".
+- **Old privacy path**: `site + "/privacy.html"`. `fetch` follows HTTP redirects and returns the
+  final page, so the check reads that page. It passes when the answer is 404; or the 200 page carries
+  a meta refresh whose URL ends in `privacy/` (`<meta http-equiv="refresh" content="0; url=…privacy/">`);
+  or the 200 page is the standard privacy page, which a server redirect lands on: it holds the nav
+  markers and its `data-nav="privacy"` link carries `aria-current="page"` (only privacy pages get
+  that, and render writes no `privacy.html`). Otherwise the gap is "privacy.html does not redirect
+  to /privacy/".
 
 In the repository checks:
 
@@ -99,14 +108,15 @@ now names its check. Keep "checked by hand" for in-app order and TalkBack.
 - Registry: `base` and `href` for a root site and for `https://cocodedk.github.io/Claude-Email-App`
   with each `default_language`.
 - Blocks: for the github.io app every `href`/`src` in nav, footer and install starts with
-  `/Claude-Email-App/` or `https://`; `nav_html(..., current="privacy")` has exactly one
+  `/Claude-Email-App/` or `https://`, except in-page fragments such as the skip link's `#main`; `nav_html(..., current="privacy")` has exactly one
   `aria-current="page"`, on the privacy link; the `data-nav` order; the icon `img` with empty `alt`;
   the stylesheet `link` first.
 - Render: a write copies `css/cocode-nav.css` into the site dir for a not-live app; `--dry-run`
   copies nothing; a privacy page gets the nav with `aria-current` on the privacy link.
 - Web checks, each with a fake `fetch`: a good site gives no new gaps; nav out of order; nav item
   missing; no icon; no stylesheet; no `robots.txt`; no `og:image`; `og:image` answering 404;
-  `privacy.html` answering 200 without a refresh; `privacy.html` answering 404 (no gap); an
+  `privacy.html` answering 200 without a refresh; `privacy.html` answering 404 (no gap); `privacy.html`
+  answering 200 with the standard privacy page, as after a server redirect (no gap); an
   unreachable site still gives exactly one gap.
 - Repo check: a README with all five sections in order (no gap), one missing, two swapped.
 - `bash scripts/gate.sh` passes (pytest and ruff). Every code file is under 200 lines.
