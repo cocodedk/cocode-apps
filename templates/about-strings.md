@@ -1,6 +1,9 @@
 # About page strings
 
-Add these to `res/values/strings.xml` (English) and `res/values-da/strings.xml` (Danish).
+Add these in both languages. `res/values/strings.xml` holds the app's `default_language` from
+`apps.yml`, and `res/values-<other>/strings.xml` holds the other one: `values-da/` for an app whose
+default is English, `values-en/` for one whose default is Danish (guard-android). `check_inapp` looks
+for that second folder.
 
 | key | English | Danish |
 |---|---|---|

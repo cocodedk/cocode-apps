@@ -17,7 +17,8 @@
 ## Where
 
 - Source file with `About` in its name under `app/src/main/` (a screen, activity or composable).
-- Strings in `app/src/main/res/values/strings.xml` and `values-da/strings.xml`; the wording for the
+- Strings in `app/src/main/res/values/strings.xml` (the `default_language`) and `values-da/` or
+  `values-en/` (the other language); the wording for the
   buttons is in [templates/about-strings.md](../templates/about-strings.md).
 - The targets come from `apps.yml`: `privacy`, `site`, `repo` (`https://github.com/cocodedk/<repo>`),
   and the F-Droid page `https://f-droid.org/packages/<applicationId>/`.
