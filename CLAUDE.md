@@ -36,6 +36,7 @@ python3 -m tools.audit all               # audit every app, rewrite STATUS.md
 python3 -m tools.audit guard-android     # one app
 python3 -m tools.render guard-android    # write the marked blocks into that app's checkout
 python3 -m tools.fdroid_status           # refresh F-Droid states in apps.yml
+python3 -m tools.art guard-android       # store icon, site icon and feature graphic from the launcher icon
 ```
 
 graph-loop builds the specs in `docs/lean/` one per run; its profile is [profile-python.md](profile-python.md).
