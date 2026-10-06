@@ -24,8 +24,10 @@
 - `check_site` in `tools/checks/web.py`: the footer marker (`cocode-apps:footer:start`), `hreflang`
   on the home page, and `sitemap.xml` answering 200.
 - `check_catalogue` in `tools/catalogue.py`: the catalogue has a `get-<id>` block for the app.
-- Checked by hand: the footer's five links, `robots.txt`, the share image, both languages on every
-  page, and the catalogue link's target.
+- `check_site` also checks that `robots.txt` answers 200, that the home page has an `og:image` share
+  image with an absolute `https://` URL that answers 200, and that `privacy.html` redirects to `/privacy/`
+  (a 404, a meta refresh, or the standard privacy page).
+- Checked by hand: the footer's five links, both languages on every page, and the catalogue link's target.
 
 ## Example
 

@@ -7,13 +7,52 @@ from tools.registry import App
 
 LOCALES = ("en-US", "da-DK")
 TEXTS = ("title.txt", "short_description.txt", "full_description.txt")
+SECTIONS = ("Features", "Privacy", "Build", "Contributing", "License")
+
+
+def _headings(text: str) -> list[str]:
+    """Level-2 headings a reader sees: not in code fences, not in HTML comments."""
+    found, fence, in_comment = [], None, False
+    for line in text.splitlines():
+        if fence:
+            closing = re.fullmatch(r" {0,3}(`+|~+)[ \t]*", line)
+            if closing and closing.group(1)[0] == fence[0] and len(closing.group(1)) >= len(fence):
+                fence = None
+            continue
+        if in_comment:
+            if "-->" not in line:
+                continue
+            line, in_comment = line.split("-->", 1)[1], False
+        line = re.sub(r"<!--.*?-->", "", line)
+        if "<!--" in line:
+            line, in_comment = line.split("<!--", 1)[0], True
+        opening = re.match(r" {0,3}(`{3,}(?=[^`]*$)|~{3,})", line)
+        if opening:
+            fence = opening.group(1)
+            continue
+        heading = re.fullmatch(r" {0,3}##[ \t]+(?!#)(.+?)[ \t#]*", line)
+        if heading:
+            found.append(heading.group(1))
+    return found
 
 
 def check_readme(app: App, root: Path) -> list[Gap]:
     readme = root / "README.md"
-    if not readme.is_file() or "cocode-apps:install:start" not in readme.read_text("utf-8"):
+    if not readme.is_file():
         return [Gap(app.id, "readme", "README has no shared install block (marker cocode-apps:install:start)")]
-    return []
+    text = readme.read_text("utf-8")
+    gaps = []
+    if "cocode-apps:install:start" not in text:
+        gaps.append(Gap(app.id, "readme", "README has no shared install block (marker cocode-apps:install:start)"))
+    headings = [h.lower() for h in _headings(text)]
+    position = 0
+    for section in SECTIONS:
+        if section.lower() not in headings[position:]:
+            problem = "out of order" if section.lower() in headings else "missing"
+            gaps.append(Gap(app.id, "readme", f"README section {section} is {problem}"))
+            break
+        position += headings[position:].index(section.lower()) + 1
+    return gaps
 
 
 def _version_code(root: Path) -> str | None:

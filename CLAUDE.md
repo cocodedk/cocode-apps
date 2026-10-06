@@ -19,7 +19,8 @@ blocks into their sites, READMEs and the cocode.dk catalogue. Public repository.
 - `audit.py` is read-only: it never changes an app repository.
 - `render.py` changes only text between `<!-- cocode-apps:<block>:start -->` and
   `<!-- cocode-apps:<block>:end -->` markers. If a file has no markers it reports that and changes
-  nothing.
+  nothing. The only files it writes outside the markers are the F-Droid badge images and
+  `css/cocode-nav.css` in `<site_dir>`, never with `--dry-run`.
 - Nothing is pushed to, or merged in, an app repository or cocode.dk without the owner's OK. One
   branch and PR per repository.
 - Spamhaus's terms forbid its name in promotional material: never name it in install blocks,

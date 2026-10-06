@@ -1,3 +1,5 @@
+import re
+
 from tools.blocks import catalogue_link, footer_html, install_html, install_md, nav_html
 from tools.catalogue import catalogue_html
 from tools.registry import load, parse
@@ -38,6 +40,59 @@ def test_nav_has_six_items_in_order_with_language_paths():
     positions = [html.index(label) for label in order]
     assert positions == sorted(positions)
     assert 'href="/en/privacy/"' in html and 'href="/"' in html and 'lang="da"' in html
+
+
+def test_sub_path_site_keeps_every_link_under_its_base():
+    a = app(site="https://cocodedk.github.io/Claude-Email-App", fdroid="live")
+    for lang in ("en", "da"):
+        for html in (nav_html(a, lang), nav_html(a, lang, "privacy"), footer_html(a, lang), install_html(a, lang)):
+            links = re.findall(r'(?:href|src)="([^"]*)"', html)
+            assert links
+            for link in links:
+                assert link.startswith(("/Claude-Email-App/", "https://", "#")), link
+
+
+def test_nav_marks_only_the_current_page():
+    home = nav_html(app(), "en")
+    assert home.count('aria-current="page"') == 1 and 'data-nav="home" aria-current="page"' in home
+    privacy = nav_html(app(), "en", current="privacy")
+    assert privacy.count('aria-current="page"') == 1 and 'data-nav="privacy" aria-current="page"' in privacy
+
+
+def test_nav_has_data_nav_in_order_icon_and_stylesheet_first():
+    html = nav_html(app(), "en")
+    assert re.findall(r'data-nav="(\w+)"', html) == ["home", "how", "install", "privacy", "lang", "more"]
+    assert html.startswith('<link rel="stylesheet" href="/css/cocode-nav.css">\n<a class="skip"')
+    assert '<img src="/img/icon.png" alt="" width="32" height="32">Demo' in html
+
+
+def css_rules():
+    from tools.registry import ROOT
+    text = re.sub(r"/\*.*?\*/", "", (ROOT / "templates/cocode-nav.css").read_text("utf-8"), flags=re.DOTALL)
+    return {" ".join(sel.split()): body for sel, body in re.findall(r"([^{}]+)\{([^}]*)\}", text)}
+
+
+def test_stylesheet_sizes_wraps_and_shows_the_skip_link():
+    rules = css_rules()
+    targets = next(body for sel, body in rules.items() if ".cocode-nav a" in sel and ".cocode-footer a" in sel
+                   and ":focus" not in sel)
+    for prop in ("display: inline-flex", "min-height: 44px", "min-width: 44px", "align-items: center",
+                 "justify-content: center"):
+        assert prop in targets
+    assert "flex-wrap: wrap" in rules[".cocode-nav"] and "display: flex" in rules[".cocode-nav"]
+    assert "flex: 1 0 100%" in rules[".cocode-nav .brand"]
+    assert re.search(r"left:\s*-\d{4,}px", rules[".skip"])
+    assert re.search(r"left:\s*0\b", rules[".skip:focus"])
+
+
+def test_stylesheet_focus_uses_current_colour_and_nothing_hides_or_colours():
+    rules = css_rules()
+    focus = next(body for sel, body in rules.items() if ":focus-visible" in sel)
+    assert "outline: 2px solid currentColor" in focus
+    everything = "".join(rules.values())
+    assert not re.search(r"display:\s*none|visibility:\s*hidden|font|#[0-9a-fA-F]{3}|rgb|hsl", everything)
+    values = re.findall(r"(?<![\w-])(?:background-)?color:\s*([^;]+);", everything)
+    assert set(values) <= {"inherit", "currentColor"}
 
 
 def test_footer_names_source_license_and_cocode():

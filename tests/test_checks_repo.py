@@ -47,6 +47,54 @@ def test_readme_needs_the_install_marker(tmp_path):
     assert "install block" in check_readme(APP, tmp_path)[0].message
 
 
+def readme_with(tmp_path, *sections):
+    body = "\n".join(f"## {s}\ntext\n" for s in sections)
+    (tmp_path / "README.md").write_text(f"# Demo\n<!-- cocode-apps:install:start -->\n{body}")
+    return check_readme(APP, tmp_path)
+
+
+def test_readme_sections_in_order_have_no_gap(tmp_path):
+    assert readme_with(tmp_path, "Features", "Screenshots", "privacy", "BUILD", "Contributing", "License") == []
+
+
+def test_readme_missing_section_is_one_gap_naming_it(tmp_path):
+    gaps = readme_with(tmp_path, "Features", "Privacy", "Contributing", "License")
+    assert len(gaps) == 1 and "Build" in gaps[0].message and "missing" in gaps[0].message
+
+
+def test_readme_swapped_sections_are_one_gap_naming_the_first_out_of_order(tmp_path):
+    gaps = readme_with(tmp_path, "Features", "Build", "Privacy", "Contributing", "License")
+    assert len(gaps) == 1 and "Build" in gaps[0].message and "out of order" in gaps[0].message
+
+
+def test_readme_level_three_headings_do_not_count(tmp_path):
+    (tmp_path / "README.md").write_text("<!-- cocode-apps:install:start -->\n### Features\n")
+    assert "Features" in check_readme(APP, tmp_path)[0].message
+
+
+def test_readme_headings_inside_code_fences_do_not_count(tmp_path):
+    sections = "\n".join(f"## {s}" for s in ("Features", "Privacy", "Build", "Contributing", "License"))
+    (tmp_path / "README.md").write_text(f"<!-- cocode-apps:install:start -->\n```md\n{sections}\n```\n")
+    assert "Features" in check_readme(APP, tmp_path)[0].message
+    (tmp_path / "README.md").write_text(
+        f"<!-- cocode-apps:install:start -->\n~~~\n## x\n~~~\n{sections}\n")
+    assert check_readme(APP, tmp_path) == []
+
+
+def test_readme_indented_headings_count_but_long_fences_and_comments_hide(tmp_path):
+    marker = "<!-- cocode-apps:install:start -->\n"
+    names = ("Features", "Privacy", "Build", "Contributing", "License")
+    (tmp_path / "README.md").write_text(marker + "\n".join(f"   ## {s}" for s in names))
+    assert check_readme(APP, tmp_path) == []
+    body = "\n".join(f"## {s}" for s in names)
+    (tmp_path / "README.md").write_text(f"{marker}````md\n```\n{body}\n```\n````\n")
+    assert "Features" in check_readme(APP, tmp_path)[0].message
+    (tmp_path / "README.md").write_text(f"{marker}<!--\n{body}\n-->\n<!-- x --> ## no\n")
+    assert "Features" in check_readme(APP, tmp_path)[0].message
+    (tmp_path / "README.md").write_text(f"{marker}<!-- one-line -->\n{body}\n")
+    assert check_readme(APP, tmp_path) == []
+
+
 def test_inapp_needs_about_screen_privacy_link_and_both_languages(tmp_path):
     src = tmp_path / "app/src/main"
     (src / "java/dk/cocode/demo/ui").mkdir(parents=True)

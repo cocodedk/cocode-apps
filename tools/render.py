@@ -35,7 +35,8 @@ def _pages(app: App, root: Path) -> list[tuple[Path, str, bool]]:
 def targets(app: App, root: Path) -> list[tuple[Path, str, str]]:
     out = [(root / "README.md", "install", install_md(app, "en"))]
     for page, lang, is_index in _pages(app, root):
-        out += [(page, "nav", nav_html(app, lang)), (page, "footer", footer_html(app, lang))]
+        current = "home" if is_index else "privacy"
+        out += [(page, "nav", nav_html(app, lang, current)), (page, "footer", footer_html(app, lang))]
         if is_index:
             out.append((page, "install", install_html(app, lang)))
     return out
@@ -51,11 +52,14 @@ def apply(app: App, root: Path, write: bool = True) -> list[str]:
         report.append(f"{path.relative_to(root)} [{block}]: {state}")
         if write and state == "ok":
             path.write_bytes(new.encode("utf-8"))  # bytes: line endings outside the markers stay as they were
-    if write and app.fdroid_live:
-        for lang in ("en", "da"):
-            dest = root / app.site_dir / BADGE_FILE.format(lang=lang)
+    if write:
+        copies = [("cocode-nav.css", "css/cocode-nav.css")]
+        if app.fdroid_live:
+            copies += [(f"badges/get-it-on-fdroid-{lang}.png", BADGE_FILE.format(lang=lang)) for lang in ("en", "da")]
+        for source, target in copies:
+            dest = root / app.site_dir / target
             dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(ROOT / "templates" / "badges" / f"get-it-on-fdroid-{lang}.png", dest)
+            shutil.copyfile(ROOT / "templates" / source, dest)
     return report
 
 

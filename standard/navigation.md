@@ -21,8 +21,11 @@
 
 - `check_site` in `tools/checks/web.py`: the home page carries the navigation marker
   (`cocode-apps:nav:start`).
-- Checked by hand: the six items and their order, wrapping on phones, 44 px targets,
-  `aria-current`, the skip link, and the marker on pages other than the home page.
+- `check_site` also reads the home page's navigation: the six `data-nav` items must be `home, how,
+  install, privacy, lang, more` in that order, and `img/icon.png` and `css/cocode-nav.css` must answer 200.
+- Wrapping on phones, 44 px targets and `aria-current` are written by `templates/cocode-nav.css` and
+  `tools.render`, which the audit cannot see in a browser.
+- Checked by hand: the skip link, and the marker on pages other than the home page.
 
 ## Example
 

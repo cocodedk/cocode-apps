@@ -4,6 +4,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlparse
 
 import yaml
 
@@ -48,8 +49,15 @@ class App:
     def apk_url(self) -> str:
         return f"https://github.com/cocodedk/{self.repo}/releases/latest/download/{self.apk_asset}"
 
+    @property
+    def base(self) -> str:
+        return urlparse(self.site).path.rstrip("/") + "/"
+
     def home(self, lang: str) -> str:
         return "/" if lang == self.default_language else f"/{lang}/"
+
+    def href(self, lang: str) -> str:
+        return self.base + self.home(lang)[1:]
 
 
 def _app(raw: dict) -> App:
