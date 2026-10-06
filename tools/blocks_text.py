@@ -5,7 +5,7 @@ TEXT = {
            "how": "How it works", "install": "Install", "privacy": "Privacy", "more": "More apps",
            "skip": "Skip to content", "source": "Source code", "license": "License", "made": "Made by Cocode",
            "lang_name": "English"},
-    "da": {"badge_alt": "Hent på F-Droid", "coming": "Kommer på F-Droid",
+    "da": {"badge_alt": "Hent den på F-Droid", "coming": "Kommer på F-Droid",
            "apk": "Hent APK-filen fra GitHub", "obtainium": "Opdatér GitHub-APK'en automatisk med Obtainium",
            "how": "Sådan virker det", "install": "Installér", "privacy": "Privatliv", "more": "Flere apps",
            "skip": "Spring til indhold", "source": "Kildekode", "license": "Licens", "made": "Lavet af Cocode",

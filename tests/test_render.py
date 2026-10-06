@@ -31,7 +31,7 @@ def test_apply_writes_readme_and_site_and_copies_badges(tmp_path):
         page.write_text(f"<main>{S}{E}</main>")
     report = apply(app, tmp_path)
     assert "f-droid.org/packages/dk.cocode.demo/" in (tmp_path / "README.md").read_text()
-    assert "Hent på F-Droid" in (site / "index.html").read_text()
+    assert "Hent den på F-Droid" in (site / "index.html").read_text()
     assert "Get it on F-Droid" in (site / "en" / "index.html").read_text()
     assert (site / "img" / "get-it-on-fdroid-da.png").is_file()
     assert any("missing" in line for line in report)  # nav/footer markers absent in this fixture
