@@ -61,7 +61,9 @@ cocode-apps/
 
 ### `apps.yml` (per app)
 
-`id` (short slug), `name` (en, da), `repo`, `applicationId`, `site` (URL), `privacy` (URL),
+`id` (short slug), `name` (en, da), `repo`, `checkout` (local folder under `~/0-projects/`),
+`applicationId`, `site` (URL), `site_dir` (`website` or `docs`), `default_language` (`en` or `da`,
+the language served at `/`; the other one at `/<lang>/`), `privacy` (URL),
 `license` (SPDX), `languages`, `fdroid` (`live` | `mr: <number>` | `none`), `apk_asset` (file name of
 the stable release asset), `obtainium` (bool), `private` (bool; when true only `id`, `name` and
 `private` are kept). The tools are Python 3 with one dependency, PyYAML, to read it.
