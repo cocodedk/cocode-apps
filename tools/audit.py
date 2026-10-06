@@ -20,7 +20,8 @@ def audit_app(app: App, fetch: Fetch, projects: Path) -> list[Gap]:
         return []
     return (check_site(app, fetch) + check_release(app, fetch) + check_fdroid(app, fetch)
             + check_repo(app, projects / app.checkout)
-            + check_catalogue(app, projects / "cocodedk" / "templates" / "partials" / "catalogue.html"))
+            + check_catalogue(app, [projects / "cocodedk" / "templates" / "partials" / name
+                                    for name in ("catalogue.html", "works.html")]))
 
 
 def status_markdown(apps: list[App], gaps: dict[str, list[Gap]], date: str) -> str:

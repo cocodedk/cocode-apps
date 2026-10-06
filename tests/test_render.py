@@ -79,4 +79,5 @@ def test_catalogue_flag_needs_no_app(monkeypatch, tmp_path):
     page = tmp_path / "catalogue.html"
     page.write_text("<li></li>")
     monkeypatch.setattr(catalogue, "CATALOGUE_FILE", page)
+    monkeypatch.setattr(catalogue, "WORKS_FILE", tmp_path / "works.html")  # absent: skipped
     assert main(["--catalogue", "--dry-run"]) == 0
