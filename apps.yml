@@ -1,0 +1,193 @@
+apps:
+  - id: guard-android
+    name: {en: Guard for Android, da: Guard for Android}
+    repo: guard-android
+    checkout: guard-android
+    applicationId: dk.cocode.guard
+    site: https://android.guard.cocode.dk
+    site_dir: website
+    default_language: da
+    privacy: https://android.guard.cocode.dk/privacy/
+    license: GPL-3.0-or-later
+    languages: [en, da]
+    fdroid: none
+    apk_asset: GuardAndroid.apk
+  - id: babakcast
+    name: {en: BabakCast, da: BabakCast}
+    repo: BabakCast
+    checkout: BabakCast
+    applicationId: com.cocode.babakcast
+    site: https://cast.cocode.dk
+    site_dir: website
+    default_language: en
+    privacy: https://cast.cocode.dk/privacy.html
+    license: Apache-2.0
+    languages: [en]
+    fdroid: mr:49562
+    apk_asset: BabakCast.apk
+  - id: babakplayer
+    name: {en: BabakPlayer, da: BabakPlayer}
+    repo: BabakPlayer
+    checkout: BabakPlayer
+    applicationId: com.cocode.babakplayer
+    site: https://player.cocode.dk
+    site_dir: website
+    default_language: en
+    privacy: https://player.cocode.dk/privacy.html
+    license: Apache-2.0
+    languages: [en, fa]
+    fdroid: mr:49561
+    apk_asset: BabakPlayer.apk
+  - id: battleship
+    name: {en: Battleship, da: Battleship}
+    repo: Battleship
+    checkout: Battleship
+    applicationId: com.cocode.battleship
+    site: https://battleship.cocode.dk
+    site_dir: website
+    default_language: en
+    privacy: https://battleship.cocode.dk/privacy.html
+    license: Apache-2.0
+    languages: [en]
+    fdroid: live
+    apk_asset: Battleship.apk
+  - id: claude-email-app
+    name: {en: Claude Email App, da: Claude Email App}
+    repo: Claude-Email-App
+    checkout: Claude-Email-App
+    applicationId: com.cocode.claudeemailapp
+    site: https://cocodedk.github.io/Claude-Email-App
+    site_dir: website
+    default_language: en
+    license: Apache-2.0
+    languages: [en]
+    fdroid: none
+    apk_asset: Claude-Email-App.apk
+  - id: linkqrwallet
+    name: {en: Link QR Wallet, da: Link QR Wallet}
+    repo: LinkQRWallet
+    checkout: LinkQRWallet
+    applicationId: com.cocode.linkqrwallet
+    site: https://qr.cocode.dk
+    site_dir: docs
+    default_language: en
+    license: MIT
+    languages: [en]
+    fdroid: mr:49558
+    apk_asset: LinkQRWallet.apk
+  - id: metrologist
+    name: {en: Metrologist, da: Metrologist}
+    repo: Metrologist
+    checkout: measure-app
+    applicationId: com.cocode.measureapp
+    site: https://measure.cocode.dk
+    site_dir: website
+    default_language: en
+    privacy: https://measure.cocode.dk/privacy.html
+    license: Apache-2.0
+    languages: [en]
+    fdroid: none
+    apk_asset: Metrologist.apk
+  - id: chess-puzzles
+    name: {en: Chess Puzzles, da: Chess Puzzles}
+    repo: chess-puzzles
+    checkout: chess-puzzles
+    applicationId: dk.cocode.chess
+    site: https://chess.cocode.dk
+    site_dir: website
+    default_language: en
+    privacy: https://chess.cocode.dk/privacy.html
+    license: Apache-2.0
+    languages: [en]
+    fdroid: live
+    apk_asset: ChessPuzzles.apk
+  - id: fits-qr
+    name: {en: FITS, da: FITS}
+    repo: fits-qr
+    checkout: fits-qr
+    applicationId: dk.fits.contact
+    site: https://cocodedk.github.io/fits-qr
+    site_dir: website
+    default_language: en
+    license: Apache-2.0
+    languages: [en]
+    fdroid: none
+    apk_asset: FITS-QR.apk
+  - id: lifemeter
+    name: {en: LifeMeter, da: LifeMeter}
+    repo: lifemeter
+    checkout: lifemeter
+    applicationId: dk.cocode.lifemeter
+    site: https://lifemeter.cocode.dk
+    site_dir: website
+    default_language: en
+    privacy: https://lifemeter.cocode.dk/privacy.html
+    license: Apache-2.0
+    languages: [en]
+    fdroid: live
+    apk_asset: LifeMeter.apk
+  - id: markdown
+    name: {en: Markdown, da: Markdown}
+    repo: markdown
+    checkout: markdown-viewer
+    applicationId: dk.cocode.markdown
+    site: https://markdown.cocode.dk
+    site_dir: website
+    default_language: en
+    license: Apache-2.0
+    languages: [en]
+    fdroid: none
+    apk_asset: Markdown.apk
+  - id: parvaz
+    name: {en: Parvaz, da: Parvaz}
+    repo: parvaz
+    checkout: parvaz
+    applicationId: dk.cocode.parvaz
+    site: https://parvaz.cocode.dk
+    site_dir: website
+    default_language: en
+    license: MIT
+    languages: [en]
+    fdroid: mr:49559
+    apk_asset: Parvaz.apk
+  - id: persian-calendar
+    name: {en: Persian Calendar, da: Persian Calendar}
+    repo: persian-calendar
+    checkout: Calendar
+    applicationId: com.cocode.calendar
+    site: https://calendar.cocode.dk
+    site_dir: docs
+    default_language: en
+    privacy: https://calendar.cocode.dk/privacy.html
+    license: MIT
+    languages: [en]
+    fdroid: mr:49564
+    apk_asset: persian-calendar.apk
+  - id: tms-measurement-app
+    name: {en: TMS Measurement, da: TMS Measurement}
+    repo: tms-measurement-app
+    checkout: TMSMeasurement
+    applicationId: com.cocode.tmsmeasurement
+    site: https://tms.cocode.dk
+    site_dir: docs
+    default_language: en
+    privacy: https://tms.cocode.dk/privacy.html
+    license: MIT
+    languages: [en, ar, fa, zh]
+    fdroid: mr:49545
+    apk_asset: TMSMeasurement.apk
+  - id: weather-android
+    name: {en: Weather, da: Weather}
+    repo: weather-android
+    checkout: weather-android
+    applicationId: dk.cocode.weather
+    site: https://weather.cocode.dk
+    site_dir: website
+    default_language: en
+    license: Apache-2.0
+    languages: [en]
+    fdroid: mr:49432
+    apk_asset: Weather.apk
+  - id: exercise-log
+    name: {en: Exercise Log, da: Exercise Log}
+    private: true
