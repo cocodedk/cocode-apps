@@ -27,3 +27,42 @@ def test_audit_app_collects_web_and_repo_gaps(tmp_path):
     gaps = audit_app(app, lambda url: (0, ""), tmp_path)
     areas = {g.area for g in gaps}
     assert {"site", "release", "repo", "cocode.dk"} <= areas
+
+
+def _cli(monkeypatch, tmp_path):
+    from tools import audit
+    monkeypatch.setattr(audit, "load", lambda: parse({"apps": [BASE, SECRET]}))
+    monkeypatch.setattr(audit, "real_fetch", lambda url: (0, ""))
+    monkeypatch.setattr(audit, "PROJECTS", tmp_path / "projects")
+    monkeypatch.setattr(audit, "ROOT", tmp_path)
+    monkeypatch.setattr(audit, "_today", lambda: "2026-10-06")
+    return audit
+
+
+def test_main_all_prints_gaps_and_writes_status(monkeypatch, tmp_path, capsys):
+    audit = _cli(monkeypatch, tmp_path)
+    assert audit.main(["all"]) == 0
+    out = capsys.readouterr().out
+    assert "demo:" in out and "secret" in out
+    status = (tmp_path / "STATUS.md").read_text("utf-8")
+    assert "(2026-10-06)" in status and "| Demo |" in status and "| Secret | private |" in status
+
+
+def test_main_one_app_prints_and_writes_no_status(monkeypatch, tmp_path, capsys):
+    audit = _cli(monkeypatch, tmp_path)
+    assert audit.main(["demo"]) == 0
+    assert "demo:" in capsys.readouterr().out
+    assert not (tmp_path / "STATUS.md").exists()
+
+
+def test_today_is_the_local_date(monkeypatch):
+    import time
+
+    from tools import audit
+    monkeypatch.setenv("TZ", "Pacific/Kiritimati")  # UTC+14: ahead of the UTC date for 14 hours a day
+    time.tzset()
+    try:
+        assert audit._today() == time.strftime("%Y-%m-%d")
+    finally:
+        monkeypatch.delenv("TZ")
+        time.tzset()

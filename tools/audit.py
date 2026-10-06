@@ -37,6 +37,11 @@ def status_markdown(apps: list[App], gaps: dict[str, list[Gap]], date: str) -> s
     return "\n".join(lines) + "\n"
 
 
+def _today() -> str:
+    """Today's date where the audit runs (local time), as YYYY-MM-DD."""
+    return datetime.datetime.now(datetime.UTC).astimezone().date().isoformat()
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Audit Cocode apps against the standard.")
     parser.add_argument("app", help="an app id, or 'all'")
@@ -49,8 +54,7 @@ def main(argv: list[str] | None = None) -> int:
         for g in found:
             print(f"  - {g.area}: {g.message}")
     if args.app == "all":
-        today = datetime.datetime.now(datetime.UTC).date().isoformat()
-        (ROOT / "STATUS.md").write_text(status_markdown(apps, gaps, today), "utf-8")
+        (ROOT / "STATUS.md").write_text(status_markdown(apps, gaps, _today()), "utf-8")
     return 0
 
 
