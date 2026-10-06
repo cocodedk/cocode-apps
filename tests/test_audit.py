@@ -66,3 +66,21 @@ def test_today_is_the_local_date(monkeypatch):
     finally:
         monkeypatch.delenv("TZ")
         time.tzset()
+
+
+def test_root_and_site_audit_one_app_elsewhere(monkeypatch, tmp_path):
+    audit = _cli(monkeypatch, tmp_path)
+    seen = []
+    monkeypatch.setattr(audit, "real_fetch", lambda url: seen.append(url) or (0, ""))
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    assert audit.main(["demo", "--root", str(worktree), "--site", "http://127.0.0.1:8000/"]) == 0
+    assert any(url.startswith("http://127.0.0.1:8000/") for url in seen)
+    assert not any(url.startswith("https://demo.cocode.dk") for url in seen)
+
+
+def test_root_with_all_is_refused(monkeypatch, tmp_path):
+    import pytest
+    audit = _cli(monkeypatch, tmp_path)
+    with pytest.raises(SystemExit):
+        audit.main(["all", "--root", str(tmp_path)])

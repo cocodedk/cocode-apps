@@ -81,3 +81,11 @@ def test_catalogue_flag_needs_no_app(monkeypatch, tmp_path):
     monkeypatch.setattr(catalogue, "CATALOGUE_FILE", page)
     monkeypatch.setattr(catalogue, "WORKS_FILE", tmp_path / "works.html")  # absent: skipped
     assert main(["--catalogue", "--dry-run"]) == 0
+
+
+def test_root_flag_writes_into_the_given_folder(monkeypatch, tmp_path):
+    from tools import render
+    monkeypatch.setattr(render, "load", lambda: parse({"apps": [BASE]}))
+    (tmp_path / "README.md").write_text(f"{S}\n{E}")
+    assert render.main(["demo", "--root", str(tmp_path)]) == 0
+    assert "f-droid.org/packages/dk.cocode.demo/" in (tmp_path / "README.md").read_text()
