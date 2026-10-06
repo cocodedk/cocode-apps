@@ -104,6 +104,15 @@ def test_inapp_needs_about_screen_privacy_link_and_both_languages(tmp_path):
     assert "About" in messages and "privacy" in messages and "values-en" in messages
 
 
+def test_privacy_link_built_from_the_site_counts():
+    from tools.checks.repo import _links_privacy
+    built = 'private const val SITE = "https://demo.cocode.dk/"\nval p = base + "privacy/"'
+    assert _links_privacy("https://demo.cocode.dk/privacy/", built)
+    assert _links_privacy("https://demo.cocode.dk/privacy.html", 'val u = "https://demo.cocode.dk/privacy.html"')
+    assert not _links_privacy("https://demo.cocode.dk/privacy/", 'val s = "https://demo.cocode.dk/"')
+    assert not _links_privacy("https://demo.cocode.dk/privacy/", 'val p = "privacy/" // another site')
+
+
 def test_missing_checkout_is_one_gap(tmp_path):
     gaps = check_repo(APP, tmp_path / "nope")
     assert len(gaps) == 1 and "checkout missing" in gaps[0].message

@@ -87,6 +87,12 @@ def check_fastlane(app: App, root: Path) -> list[Gap]:
     return gaps
 
 
+def _links_privacy(privacy: str, text: str) -> bool:
+    """The whole URL, or one file that names the site and builds the privacy path from it."""
+    site, _, path = privacy.partition("://")[2].partition("/")
+    return privacy in text or ("https://" + site in text and path.rstrip("/").split("/")[-1] in text)
+
+
 def check_inapp(app: App, root: Path) -> list[Gap]:
     def gap(message: str) -> Gap:
         return Gap(app.id, "app", message)
@@ -96,8 +102,8 @@ def check_inapp(app: App, root: Path) -> list[Gap]:
     gaps = []
     if not any("about" in f.stem.lower() for f in code_files):
         gaps.append(gap("no About screen (no source file named *About*)"))
-    sources = "".join(f.read_text("utf-8", "replace") for f in code_files + list(main.rglob("*.xml")))
-    if not app.privacy or app.privacy not in sources:
+    texts = [f.read_text("utf-8", "replace") for f in code_files + list(main.rglob("*.xml"))]
+    if not app.privacy or not any(_links_privacy(app.privacy, text) for text in texts):
         gaps.append(gap(f"the app does not link its privacy policy ({app.privacy or 'no privacy URL in apps.yml'})"))
     other = "en" if app.default_language == "da" else "da"
     if not (main / "res" / f"values-{other}").is_dir():
