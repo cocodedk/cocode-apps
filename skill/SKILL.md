@@ -49,4 +49,5 @@ python3 -m tools.audit guard-android     # one app
 python3 -m tools.render guard-android    # write the marked blocks into that app's checkout
 python3 -m tools.render --catalogue      # write the download links into cocode.dk
 python3 -m tools.fdroid_status           # refresh F-Droid states in apps.yml
+python3 -m tools.art guard-android       # store icon, site icon and feature graphic from the launcher icon
 ```
