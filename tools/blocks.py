@@ -42,7 +42,14 @@ def install_md(app: App, lang: str) -> str:
     return "\n".join(lines)
 
 
+def _bilingual(app: App) -> bool:
+    """The site has both languages, so the language switch has somewhere to go."""
+    return {"en", "da"} <= set(app.languages)
+
+
 def nav_html(app: App, lang: str, current: str = "home") -> str:
+    """The privacy link appears once apps.yml has a privacy URL, the language switch once the app has both
+    languages: no link ever points at a page that does not exist yet."""
     t, other = TEXT[lang], _other(app, lang)
     home = app.href(lang)
     name = app.name_en if lang == "en" else app.name_da
@@ -52,6 +59,9 @@ def nav_html(app: App, lang: str, current: str = "home") -> str:
         return f'  <a {attrs} data-nav="{key}"{page}>{label}</a>\n'
 
     icon = f'<img src="{app.base}img/icon.png" alt="" width="32" height="32">'
+    privacy = link("privacy", f'href="{home}privacy/"', escape(t["privacy"])) if app.privacy else ""
+    switch = (link("lang", f'href="{app.href(other)}" hreflang="{other}" lang="{other}"',
+                   escape(TEXT[other]["lang_name"])) if _bilingual(app) else "")
     return (
         f'<link rel="stylesheet" href="{app.base}css/cocode-nav.css">\n'
         f'<a class="skip" href="#main">{escape(t["skip"])}</a>\n'
@@ -59,9 +69,8 @@ def nav_html(app: App, lang: str, current: str = "home") -> str:
         + link("home", f'class="brand" href="{home}"', icon + escape(name))
         + link("how", f'href="{home}#how"', escape(t["how"]))
         + link("install", f'href="{home}#install"', escape(t["install"]))
-        + link("privacy", f'href="{home}privacy/"', escape(t["privacy"]))
-        + link("lang", f'href="{app.href(other)}" hreflang="{other}" lang="{other}"',
-               escape(TEXT[other]["lang_name"]))
+        + privacy
+        + switch
         + link("more", f'href="{CATALOGUE_URL}"', escape(t["more"]))
         + "</nav>"
     )
@@ -72,8 +81,8 @@ def footer_html(app: App, lang: str) -> str:
     return (
         '<footer class="cocode-footer">\n'
         f'  <a href="https://github.com/cocodedk/{app.repo}">{escape(t["source"])}</a> ·\n'
-        f'  <a href="{home}privacy/">{escape(t["privacy"])}</a> ·\n'
-        f'  {escape(t["license"])}: {escape(app.license)} ·\n'
+        + (f'  <a href="{home}privacy/">{escape(t["privacy"])}</a> ·\n' if app.privacy else "")
+        + f'  {escape(t["license"])}: {escape(app.license)} ·\n'
         f'  <a href="{CATALOGUE_URL}">{escape(t["made"])} (cocode.dk)</a>\n'
         "</footer>"
     )

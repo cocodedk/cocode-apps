@@ -4,6 +4,7 @@ from tools.render import apply, replace_block
 S, E = "<!-- cocode-apps:install:start -->", "<!-- cocode-apps:install:end -->"
 BASE = {"id": "demo", "name": {"en": "Demo", "da": "Demo"}, "repo": "demo-android", "checkout": "demo",
         "applicationId": "dk.cocode.demo", "site": "https://demo.cocode.dk", "default_language": "da",
+        "privacy": "https://demo.cocode.dk/privacy/",
         "license": "MIT", "languages": ["en", "da"], "fdroid": "live", "apk_asset": "Demo.apk"}
 
 
