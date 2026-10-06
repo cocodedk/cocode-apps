@@ -53,6 +53,8 @@ def test_nav_out_of_order_or_missing_an_item_is_one_gap_naming_what_was_found():
     assert len(swapped) == 1 and "home, install, how" in swapped[0]
     short = messages({"/": (200, page(("home", "how", "install", "privacy", "lang")))})
     assert len(short) == 1 and "home, how, install, privacy, lang," in short[0]
+    extra = messages({"/": (200, page(("home", "how", "install", "privacy", "lang", "more", "")))})
+    assert len(extra) == 1 and "(empty)" in extra[0]
 
 
 def test_missing_icon_stylesheet_and_robots_are_one_gap_each():

@@ -4,7 +4,7 @@
 
 The same top in every repo: a one-line description, the install block (Markdown), screenshots, and a
 privacy summary with a link. Then the same section order: Features, Privacy, Build, Contributing,
-License.
+License, each written as a `## ` heading (not an underlined one).
 
 ## Where
 
@@ -18,7 +18,7 @@ License.
 - `check_readme` in `tools/checks/repo.py`: the README exists and carries the install marker
   (`cocode-apps:install:start`).
 - `check_readme` also checks the level-2 headings: `Features`, `Privacy`, `Build`, `Contributing`,
-  `License`, in that order.
+  `License`, in that order. It reads `## ` headings only, outside code fences and HTML comments.
 - Checked by hand: the one-line description, the screenshots, and the privacy summary and link.
 
 ## Example

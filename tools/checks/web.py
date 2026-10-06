@@ -61,7 +61,8 @@ def _nav_gaps(home: str, gap) -> list[Gap]:
     if MARKERS["navigation"] not in home:
         return []  # the missing-marker gap already says so
     block = _nav_block(home) or ""
-    found = [_attr(tag, "data-nav") for tag in _tags(block, "a") if _attr(tag, "data-nav")]
+    values = [_attr(tag, "data-nav") for tag in _tags(block, "a")]
+    found = [v if v else "(empty)" for v in values if v is not None]
     if found == NAV_ORDER:
         return []
     return [gap(f"navigation items are {', '.join(found) or 'none'}, expected {', '.join(NAV_ORDER)}")]
