@@ -11,7 +11,7 @@ FILES = {"about-page.md", "privacy.md", "install-block.md", "navigation.md", "re
          "store-listing.md", "release.md", "website.md", PLACEHOLDER}
 HEADINGS = ("What must exist", "Where", "How the audit checks it", "Example")
 STRINGS = {
-    "about_check_updates": ("Check for updates", "Søg efter opdateringer"),
+    "about_check_updates": ("See the latest version", "Se den nyeste version"),
     "about_privacy_link": ("Read the privacy policy", "Læs privatlivspolitikken"),
     "about_website": ("Open the website", "Åbn hjemmesiden"),
     "about_source": ("See the source code on GitHub", "Se kildekoden på GitHub"),

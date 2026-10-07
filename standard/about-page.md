@@ -4,7 +4,7 @@
 
 - An **About page**, reachable from the main screen, with these sections in this order, each title a
   TalkBack heading:
-  1. Name and version, plus a "Check for updates" button. It opens the F-Droid page, or the GitHub
+  1. Name and version, plus a "See the latest version" button. It opens the F-Droid page, or the GitHub
      release until the app is live on F-Droid. The app never checks for updates over the network.
   2. What the app does (one paragraph).
   3. The privacy promises in short, plus a "Read the privacy policy" button.
