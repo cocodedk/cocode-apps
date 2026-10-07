@@ -47,9 +47,14 @@ def _bilingual(app: App) -> bool:
     return {"en", "da"} <= set(app.languages)
 
 
-def nav_html(app: App, lang: str, current: str = "home") -> str:
+def skip_html(lang: str) -> str:
+    return f'<a class="skip" href="#main">{escape(TEXT[lang]["skip"])}</a>'
+
+
+def nav_html(app: App, lang: str, current: str = "home", skip: bool = True) -> str:
     """The privacy link appears once apps.yml has a privacy URL, the language switch once the app has both
-    languages: no link ever points at a page that does not exist yet."""
+    languages: no link ever points at a page that does not exist yet. `skip=False` when the page has its own
+    skip block first in <body> (a page whose header comes before the navigation)."""
     t, other = TEXT[lang], _other(app, lang)
     home = app.href(lang)
     name = app.name_en if lang == "en" else app.name_da
@@ -64,8 +69,8 @@ def nav_html(app: App, lang: str, current: str = "home") -> str:
                    escape(TEXT[other]["lang_name"])) if _bilingual(app) else "")
     return (
         f'<link rel="stylesheet" href="{app.base}css/cocode-nav.css">\n'
-        f'<a class="skip" href="#main">{escape(t["skip"])}</a>\n'
-        f'<nav class="cocode-nav" aria-label="{escape(name)}">\n'
+        + (skip_html(lang) + "\n" if skip else "")
+        + f'<nav class="cocode-nav" aria-label="{escape(name)}">\n'
         + link("home", f'class="brand" href="{home}"', icon + escape(name))
         + link("how", f'href="{home}#how"', escape(t["how"]))
         + link("install", f'href="{home}#install"', escape(t["install"]))
