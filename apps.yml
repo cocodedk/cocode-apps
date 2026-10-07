@@ -22,7 +22,7 @@ apps:
     default_language: en
     privacy: https://cast.cocode.dk/privacy/
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: mr:49562
     apk_asset: BabakCast.apk
   - id: babakplayer
@@ -35,7 +35,7 @@ apps:
     default_language: en
     privacy: https://player.cocode.dk/privacy/
     license: Apache-2.0
-    languages: [en, fa]
+    languages: [en, da, fa]
     fdroid: mr:49561
     apk_asset: BabakPlayer.apk
   - id: battleship
@@ -48,7 +48,7 @@ apps:
     default_language: en
     privacy: https://battleship.cocode.dk/privacy/
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: live
     apk_asset: Battleship.apk
   - id: claude-email-app
@@ -60,7 +60,7 @@ apps:
     site_dir: website
     default_language: en
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: none
     apk_asset: Claude-Email-App.apk
   - id: linkqrwallet
@@ -72,7 +72,7 @@ apps:
     site_dir: docs
     default_language: en
     license: MIT
-    languages: [en]
+    languages: [en, da]
     fdroid: mr:49558
     apk_asset: LinkQRWallet.apk
   - id: metrologist
@@ -85,7 +85,7 @@ apps:
     default_language: en
     privacy: https://measure.cocode.dk/privacy/
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: none
     apk_asset: Metrologist.apk
   - id: chess-puzzles
@@ -98,7 +98,7 @@ apps:
     default_language: en
     privacy: https://chess.cocode.dk/privacy/
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: live
     apk_asset: ChessPuzzles.apk
   - id: fits-qr
@@ -110,7 +110,7 @@ apps:
     site_dir: website
     default_language: en
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: none
     apk_asset: FITS-QR.apk
   - id: lifemeter
@@ -123,7 +123,7 @@ apps:
     default_language: en
     privacy: https://lifemeter.cocode.dk/privacy/
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: live
     apk_asset: LifeMeter.apk
   - id: markdown
@@ -135,7 +135,7 @@ apps:
     site_dir: website
     default_language: en
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: none
     apk_asset: Markdown.apk
   - id: parvaz
@@ -147,7 +147,7 @@ apps:
     site_dir: website
     default_language: en
     license: MIT
-    languages: [en]
+    languages: [en, da]
     fdroid: mr:49559
     apk_asset: Parvaz.apk
   - id: persian-calendar
@@ -160,7 +160,7 @@ apps:
     default_language: en
     privacy: https://calendar.cocode.dk/privacy/
     license: MIT
-    languages: [en]
+    languages: [en, da]
     fdroid: mr:49564
     apk_asset: persian-calendar.apk
   - id: tms-measurement-app
@@ -173,7 +173,7 @@ apps:
     default_language: en
     privacy: https://tms.cocode.dk/privacy/
     license: MIT
-    languages: [en, ar, fa, zh]
+    languages: [en, da, ar, fa, zh]
     fdroid: mr:49545
     apk_asset: TMSMeasurement.apk
   - id: weather-android
@@ -185,7 +185,7 @@ apps:
     site_dir: website
     default_language: en
     license: Apache-2.0
-    languages: [en]
+    languages: [en, da]
     fdroid: mr:49432
     apk_asset: Weather.apk
   - id: exercise-log
