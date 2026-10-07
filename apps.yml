@@ -20,7 +20,7 @@ apps:
     site: https://cast.cocode.dk
     site_dir: website
     default_language: en
-    privacy: https://cast.cocode.dk/privacy.html
+    privacy: https://cast.cocode.dk/privacy/
     license: Apache-2.0
     languages: [en]
     fdroid: mr:49562
@@ -33,7 +33,7 @@ apps:
     site: https://player.cocode.dk
     site_dir: website
     default_language: en
-    privacy: https://player.cocode.dk/privacy.html
+    privacy: https://player.cocode.dk/privacy/
     license: Apache-2.0
     languages: [en, fa]
     fdroid: mr:49561
@@ -46,7 +46,7 @@ apps:
     site: https://battleship.cocode.dk
     site_dir: website
     default_language: en
-    privacy: https://battleship.cocode.dk/privacy.html
+    privacy: https://battleship.cocode.dk/privacy/
     license: Apache-2.0
     languages: [en]
     fdroid: live
@@ -83,7 +83,7 @@ apps:
     site: https://measure.cocode.dk
     site_dir: website
     default_language: en
-    privacy: https://measure.cocode.dk/privacy.html
+    privacy: https://measure.cocode.dk/privacy/
     license: Apache-2.0
     languages: [en]
     fdroid: none
@@ -96,7 +96,7 @@ apps:
     site: https://chess.cocode.dk
     site_dir: website
     default_language: en
-    privacy: https://chess.cocode.dk/privacy.html
+    privacy: https://chess.cocode.dk/privacy/
     license: Apache-2.0
     languages: [en]
     fdroid: live
@@ -121,7 +121,7 @@ apps:
     site: https://lifemeter.cocode.dk
     site_dir: website
     default_language: en
-    privacy: https://lifemeter.cocode.dk/privacy.html
+    privacy: https://lifemeter.cocode.dk/privacy/
     license: Apache-2.0
     languages: [en]
     fdroid: live
@@ -158,7 +158,7 @@ apps:
     site: https://calendar.cocode.dk
     site_dir: docs
     default_language: en
-    privacy: https://calendar.cocode.dk/privacy.html
+    privacy: https://calendar.cocode.dk/privacy/
     license: MIT
     languages: [en]
     fdroid: mr:49564
@@ -171,7 +171,7 @@ apps:
     site: https://tms.cocode.dk
     site_dir: docs
     default_language: en
-    privacy: https://tms.cocode.dk/privacy.html
+    privacy: https://tms.cocode.dk/privacy/
     license: MIT
     languages: [en, ar, fa, zh]
     fdroid: mr:49545
