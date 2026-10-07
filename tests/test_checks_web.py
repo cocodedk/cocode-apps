@@ -63,6 +63,16 @@ def test_missing_icon_stylesheet_and_robots_are_one_gap_each():
         assert len(found) == 1 and word in found[0]
 
 
+def test_a_clean_404_is_missing_but_any_other_failure_is_could_not_load():
+    for path, label in (("/privacy/", "privacy page"), ("/en/privacy/", "privacy page"),
+                        ("/sitemap.xml", "sitemap.xml"), ("/img/icon.png", "app icon"),
+                        ("/css/cocode-nav.css", "navigation stylesheet"), ("/robots.txt", "robots.txt")):
+        assert messages({path: (404, "")}) == [f"{label} missing: {SITE}{path}"]
+        assert messages({path: (503, "")}) == [f"could not load {label}: {SITE}{path} (status 503)"]
+        assert messages({path: (403, "")}) == [f"could not load {label}: {SITE}{path} (status 403)"]
+        assert messages({path: (0, "")}) == [f"could not load {label}: {SITE}{path} (no answer)"]
+
+
 def test_share_image_must_be_declared_and_answer_200():
     missing = messages({"/": (200, page(head=""))})
     assert len(missing) == 1 and "og:image" in missing[0]
@@ -80,6 +90,12 @@ def test_old_privacy_html_must_redirect():
     assert messages({"/privacy.html": (404, "")}) == []
     assert messages({"/privacy.html": (200, page(current="privacy"))}) == []
     assert messages({"/privacy.html": (200, page(current="home"))}) != []
+
+
+def test_old_privacy_html_that_cannot_be_loaded_is_not_called_a_missing_redirect():
+    for status, answer in ((500, "status 500"), (0, "no answer")):
+        assert messages({"/privacy.html": (status, "")}) == [
+            f"could not load {SITE}/privacy.html ({answer}); its redirect was not checked"]
 
 
 def test_commented_out_html_does_not_count():
@@ -135,6 +151,16 @@ def test_fdroid_state_must_match_fdroid_org():
     assert "live" in check_fdroid(app(fdroid="mr:5"), listed)[0].message
     assert check_fdroid(app(fdroid="live"), listed) == []
     assert "not listed" in check_fdroid(app(fdroid="live"), lambda url: (404, ""))[0].message
+
+
+def test_fdroid_server_error_is_not_reported_as_not_listed():
+    for status in (500, 503, 403):
+        def answers(url, status=status):
+            return status, ""
+
+        message = check_fdroid(app(fdroid="live"), answers)[0].message
+        assert message == f"could not confirm the F-Droid listing (status {status}); apps.yml says live"
+        assert check_fdroid(app(fdroid="none"), answers) == []
 
 
 def test_unreachable_fdroid_is_one_gap_whatever_apps_yml_says():

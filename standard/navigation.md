@@ -12,9 +12,11 @@
 
 ## Where
 
-- The block between `<!-- cocode-apps:nav:start -->` and `<!-- cocode-apps:nav:end -->` in every page
-  of `<site_dir>/` (`website/` or `docs/`, from `apps.yml`).
-- Written by `python3 -m tools.render <app>`; never edited by hand between the markers.
+- The block between `<!-- cocode-apps:nav:start -->` and `<!-- cocode-apps:nav:end -->` on every page
+  of the site (`<site_dir>/` is `website/` or `docs/`, from `apps.yml`).
+- `python3 -m tools.render <app>` writes it into the English and Danish home pages and privacy pages;
+  any other page needs the block added and updated separately. Never edit it by hand between the markers.
+- On a privacy page the language switch opens the other language's privacy page, not its home page.
 - The privacy page's `<main id="main">` is the skip link's target.
 
 ## How the audit checks it

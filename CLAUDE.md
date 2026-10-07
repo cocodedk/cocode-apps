@@ -14,9 +14,11 @@ blocks into their sites, READMEs and the cocode.dk catalogue. Public repository.
   template or standard file.
 - **Private apps** appear in `apps.yml` with `id`, `name` and `private: true` only. Nothing else
   about them goes into this public repo.
-- Tools are Python 3 with PyYAML as the only runtime dependency; tests use pytest and are **offline**:
-  every network call goes through an injectable `fetch(url) -> (status, text)` and tests pass a fake.
-- `audit.py` is read-only: it never changes an app repository.
+- Tools are Python 3. The audit and render tools need only PyYAML; artwork generation (`tools.art`) also
+  needs Pillow and Chrome or Chromium. Tests use pytest and are **offline**: every HTTP request goes
+  through an injectable `fetch(url) -> (status, text)` and tests pass a fake; `audit --fresh` also
+  contacts GitHub through `git clone`, which tests replace.
+- `audit.py` never changes an app repository; `audit all` rewrites this repository's `STATUS.md`.
 - `render.py` changes only text between `<!-- cocode-apps:<block>:start -->` and
   `<!-- cocode-apps:<block>:end -->` markers. If a file has no markers it reports that and changes
   nothing. The only files it writes outside the markers are the F-Droid badge images and

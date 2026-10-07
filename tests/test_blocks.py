@@ -30,6 +30,15 @@ def test_obtainium_link_points_at_the_repo():
     assert "Obtainium" not in install_html(app(obtainium=False), "en")
 
 
+def test_install_labels_say_what_happens_in_plain_words():
+    en, da = install_html(app(), "en"), install_html(app(), "da")
+    assert "Download the Android installation file (APK) from GitHub" in en
+    assert "Add the app to Obtainium, an app that keeps it up to date" in en
+    assert "Hent installationsfilen til Android (APK) fra GitHub" in da
+    assert "Tilføj appen i Obtainium, som holder den opdateret" in da
+    assert "[Hent installationsfilen til Android (APK) fra GitHub](" in install_md(app(), "da")
+
+
 def test_markdown_block_mirrors_html_order():
     md = install_md(app(fdroid="live"), "en")
     assert md.index("f-droid.org") < md.index("Demo.apk")
@@ -41,6 +50,20 @@ def test_nav_has_six_items_in_order_with_language_paths():
     positions = [html.index(label) for label in order]
     assert positions == sorted(positions)
     assert 'href="/en/privacy/"' in html and 'href="/"' in html and 'lang="da"' in html
+
+
+def switch_href(html):
+    return re.search(r'<a href="([^"]*)"[^>]* data-nav="lang"', html).group(1)
+
+
+def test_language_switch_on_a_privacy_page_opens_the_other_privacy_page():
+    a = app()  # Danish at /, English at /en/
+    assert switch_href(nav_html(a, "da", "privacy")) == "/en/privacy/"
+    assert switch_href(nav_html(a, "en", "privacy")) == "/privacy/"
+    assert switch_href(nav_html(a, "da")) == "/en/" and switch_href(nav_html(a, "en")) == "/"
+    sub = app(site="https://cocodedk.github.io/Claude-Email-App", default_language="en")
+    assert switch_href(nav_html(sub, "en", "privacy")) == "/Claude-Email-App/da/privacy/"
+    assert switch_href(nav_html(sub, "da", "privacy")) == "/Claude-Email-App/privacy/"
 
 
 def test_sub_path_site_keeps_every_link_under_its_base():

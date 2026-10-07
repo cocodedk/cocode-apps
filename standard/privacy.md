@@ -20,10 +20,11 @@
 
 - `check_site` in `tools/checks/web.py`: `/privacy/` answers 200 in both languages.
 - `check_inapp` in `tools/checks/repo.py`: the app links the privacy URL from `apps.yml`.
-- `check_site` also checks that `privacy.html` redirects to `/privacy/` (a 404, a meta refresh, or the
-  standard privacy page).
-- Checked by hand: the nine headings and their order, that every contacted server is listed, and the
-  package and app names.
+- `check_site` also looks at `privacy.html` and accepts a 404, a meta refresh to `privacy/`, or the
+  standard privacy page (where a server redirect lands). A pass does not prove that the old path
+  redirects.
+- Checked by hand: that old `privacy.html` paths really redirect, the nine headings and their order,
+  that every contacted server is listed, and the package and app names.
 
 ## Example
 

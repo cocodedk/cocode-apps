@@ -7,8 +7,9 @@
   `releases/latest/download/<apk_asset>` always works.
 - Changelogs in both languages for every versionCode.
 - F-Droid auto-update.
-- When F-Droid accepts an app, `apps.yml` flips it to `live` and `render` updates every badge, the
-  README, the About page target and cocode.dk.
+- When F-Droid accepts an app, `apps.yml` flips it to `live`. Then run `render` for the app (badges,
+  install block, README, navigation, footer) and, separately, `render --catalogue` for cocode.dk. The
+  in-app About page's update-button target changes through an app code change, not through `render`.
 
 ## Where
 
@@ -30,7 +31,7 @@
 
 ## Example
 
-guard-android keeps `VERSION_CODE=1001` in `gradle.properties` and ships both changelogs for it. It
-has no GitHub release yet, so `GuardAndroid.apk` does not download; the first release closes that gap.
-The audit found other apps taking the version from an environment variable and three different
+guard-android keeps `VERSION_CODE=1001` in `gradle.properties` and ships both changelogs for it. Its
+GitHub release (`v0.1.0`) publishes `GuardAndroid.apk`, so `releases/latest/download/GuardAndroid.apk`
+downloads. The audit found other apps taking the version from an environment variable and three different
 versionCode schemes across the apps.

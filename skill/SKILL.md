@@ -37,7 +37,9 @@ When F-Droid accepts an app: `python3 -m tools.fdroid_status` refreshes `apps.ym
   about them in this public repository.
 - Never name the blocklist provider in promotional text: install blocks, catalogue entries, store texts.
 - `apps.yml` is the one source of app facts; never hard-code one in a tool or template.
-- `audit` is read-only; `render` changes only text between its markers and reports files that have none.
+- `audit` leaves app repositories unchanged, but `audit all` rewrites `STATUS.md`. `render` replaces text
+  between its markers and reports files that have none; it also copies the navigation CSS and, for live
+  apps, the F-Droid badge images into the site folder (never with `--dry-run`).
 - English and Danish for every app-facing text.
 
 ## Commands

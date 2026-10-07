@@ -11,6 +11,17 @@ NAV_END = "cocode-apps:nav:end"
 NAV_ORDER = ["home", "how", "install", "privacy", "lang", "more"]
 
 
+def _answer(status: int) -> str:
+    return f"status {status}" if status else "no answer"
+
+
+def _not_found(label: str, url: str, status: int) -> str:
+    """What was found: the page is gone (a clean 404), or it could not be loaded (so nothing is known)."""
+    if status == 404:
+        return f"{label} missing: {url}"
+    return f"could not load {label}: {url} ({_answer(status)})"
+
+
 def check_site(app: App, fetch: Fetch) -> list[Gap]:
     def gap(message: str) -> Gap:
         return Gap(app.id, "site", message)
@@ -26,10 +37,12 @@ def check_site(app: App, fetch: Fetch) -> list[Gap]:
         gaps.append(gap("home page has no hreflang links"))
     for lang in ("da", "en"):
         url = app.site + app.home(lang) + "privacy/"
-        if fetch(url)[0] != 200:
-            gaps.append(gap(f"privacy page missing: {url}"))
-    if fetch(app.site + "/sitemap.xml")[0] != 200:
-        gaps.append(gap("no sitemap.xml"))
+        status = fetch(url)[0]
+        if status != 200:
+            gaps.append(gap(_not_found("privacy page", url, status)))
+    status = fetch(app.site + "/sitemap.xml")[0]
+    if status != 200:
+        gaps.append(gap(_not_found("sitemap.xml", app.site + "/sitemap.xml", status)))
     return gaps + _nav_gaps(home, gap) + _file_gaps(app, home, fetch, gap) + _old_privacy_gaps(app, fetch, gap)
 
 
@@ -79,8 +92,9 @@ def _file_gaps(app: App, home: str, fetch: Fetch, gap) -> list[Gap]:
     gaps = []
     for path, label in (("/img/icon.png", "app icon"), ("/css/cocode-nav.css", "navigation stylesheet"),
                         ("/robots.txt", "robots.txt")):
-        if fetch(app.site + path)[0] != 200:
-            gaps.append(gap(f"no {label} ({app.site}{path})"))
+        status = fetch(app.site + path)[0]
+        if status != 200:
+            gaps.append(gap(_not_found(label, app.site + path, status)))
     image = _og_image(home)
     if not image or not image.startswith("https://"):
         gaps.append(gap("home page has no og:image share image with an absolute https:// URL"))
@@ -107,6 +121,9 @@ def _old_privacy_gaps(app: App, fetch: Fetch, gap) -> list[Gap]:
     status, page = fetch(app.site + "/privacy.html")
     if status == 404 or (status == 200 and (_is_refresh_to_privacy(page) or _is_standard_privacy_page(page))):
         return []
+    if status != 200:
+        return [gap(f"could not load {app.site}/privacy.html ({_answer(status)}); "
+                    "its redirect was not checked")]
     return [gap("privacy.html does not redirect to /privacy/")]
 
 
@@ -121,6 +138,9 @@ def check_fdroid(app: App, fetch: Fetch) -> list[Gap]:
         return [Gap(app.id, "fdroid", "f-droid.org unreachable")]
     if status == 200 and not app.fdroid_live:
         return [Gap(app.id, "fdroid", f"f-droid.org lists it: set fdroid to live (now {app.fdroid})")]
-    if status != 200 and app.fdroid_live:
+    if status == 404 and app.fdroid_live:
         return [Gap(app.id, "fdroid", "apps.yml says live but f-droid.org has not listed it")]
+    if status != 200 and app.fdroid_live:
+        return [Gap(app.id, "fdroid", f"could not confirm the F-Droid listing ({_answer(status)}); "
+                    "apps.yml says live")]
     return []
