@@ -35,7 +35,7 @@ come from **one careful publisher**. An audit on 2026-10-06 found almost no cohe
 | What "cohesive" means | One recognizable publisher: same structure and routine, each app its own content and look |
 | Where it lives | A central project `cocode-apps` (`~/0-projects/cocode-apps`, GitHub `cocodedk/cocode-apps`), public |
 | Approach | One standard, one skill, one fact file (option 1 of 3); extends `android-setup` and `fdroid-release`, doesn't replace them |
-| Updates | The app never checks for updates over the network; F-Droid (or Obtainium for the GitHub APK) updates it. The About page shows the version and a "Check for updates" button that opens the F-Droid page (the GitHub release until the app is on F-Droid) |
+| Updates | The app never checks for updates over the network; F-Droid (or Obtainium for the GitHub APK) updates it. The About page shows the version and a "See the latest version" button (owner, 2026-10-07: the label says what it does) that opens the F-Droid page (the GitHub release until the app is on F-Droid) |
 | Languages | English and Danish everywhere as the baseline; an app may add more |
 | Private apps | Listed only as name + "private"; no details in this public repo |
 | Support (money, time, tokens) | A later phase; the standard reserves a Support slot on the About page and the site now, empty |
@@ -72,7 +72,7 @@ the stable release asset), `obtainium` (bool), `private` (bool; when true only `
 
 ### In the app
 - **About page**, reachable from the main screen, sections in this order, each title a TalkBack
-  heading: name and version + "Check for updates" (opens the F-Droid page, or the GitHub release
+  heading: name and version + "See the latest version" (opens the F-Droid page, or the GitHub release
   until live); what the app does (one paragraph); the privacy promises in short + "Read the privacy
   policy"; links: website, source code, report a problem; credits and licenses; made by Cocode;
   Support slot (empty until the Support phase).
