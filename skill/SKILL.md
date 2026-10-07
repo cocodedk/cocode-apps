@@ -44,7 +44,7 @@ When F-Droid accepts an app: `python3 -m tools.fdroid_status` refreshes `apps.ym
 
 ```sh
 bash scripts/gate.sh                     # pytest (+ ruff when installed)
-python3 -m tools.audit all               # audit every app, rewrite STATUS.md
+python3 -m tools.audit all --fresh       # audit every app (shallow clones of GitHub), rewrite STATUS.md
 python3 -m tools.audit guard-android     # one app
 python3 -m tools.render guard-android    # write the marked blocks into that app's checkout
 python3 -m tools.render --catalogue      # write the download links into cocode.dk

@@ -84,3 +84,24 @@ def test_root_with_all_is_refused(monkeypatch, tmp_path):
     audit = _cli(monkeypatch, tmp_path)
     with pytest.raises(SystemExit):
         audit.main(["all", "--root", str(tmp_path)])
+
+
+def test_fresh_audits_a_clone_not_the_checkout(monkeypatch, tmp_path):
+    audit = _cli(monkeypatch, tmp_path)
+    cloned = []
+
+    def fake_clone(repo, dest):
+        cloned.append(repo)
+        (dest / "fastlane").mkdir(parents=True)
+        return True
+
+    monkeypatch.setattr(audit, "clone", fake_clone)
+    assert audit.main(["demo", "--fresh"]) == 0
+    assert cloned == ["demo-android"]
+
+
+def test_fresh_reports_a_failed_clone_as_a_missing_checkout(monkeypatch, tmp_path, capsys):
+    audit = _cli(monkeypatch, tmp_path)
+    monkeypatch.setattr(audit, "clone", lambda repo, dest: False)
+    audit.main(["demo", "--fresh"])
+    assert "checkout missing" in capsys.readouterr().out
