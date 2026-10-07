@@ -10,7 +10,7 @@ apps:
     privacy: https://android.guard.cocode.dk/privacy/
     license: GPL-3.0-or-later
     languages: [en, da]
-    fdroid: none
+    fdroid: mr:51446
     apk_asset: GuardAndroid.apk
   - id: babakcast
     name: {en: BabakCast, da: BabakCast}
