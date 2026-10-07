@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import datetime
+import subprocess
+import tempfile
 from pathlib import Path
 
 from tools.catalogue import check_catalogue
@@ -45,11 +47,27 @@ def _today() -> str:
     return datetime.datetime.now(datetime.UTC).astimezone().date().isoformat()
 
 
+def clone(repo: str, dest: Path) -> bool:
+    """A shallow clone of the default branch from GitHub; the owner's own checkout is never touched."""
+    url = f"https://github.com/cocodedk/{repo}.git"
+    return subprocess.run(["git", "clone", "--quiet", "--depth", "1", url, str(dest)],
+                          capture_output=True, check=False).returncode == 0
+
+
+def _fresh(app: App, tmp: Path) -> Path | None:
+    if app.private:
+        return None
+    dest = tmp / app.checkout
+    return dest if clone(app.repo, dest) else tmp / "clone-failed" / app.checkout
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Audit Cocode apps against the standard.")
     parser.add_argument("app", help="an app id, or 'all'")
     parser.add_argument("--root", type=Path, help="one app only: audit this folder instead of its checkout")
     parser.add_argument("--site", help="one app only: check the site at this address (a local server, say)")
+    parser.add_argument("--fresh", action="store_true",
+                        help="audit a shallow clone of each repository's default branch, not the local checkout")
     args = parser.parse_args(argv)
     if args.app == "all" and (args.root or args.site):
         parser.error("--root and --site need one app, not 'all'")
@@ -57,7 +75,11 @@ def main(argv: list[str] | None = None) -> int:
     chosen = apps if args.app == "all" else [find(apps, args.app)]
     if args.site:
         chosen = [dataclasses.replace(chosen[0], site=args.site.rstrip("/"))]
-    gaps = {app.id: audit_app(app, real_fetch, PROJECTS, args.root) for app in chosen}
+    if args.fresh:
+        with tempfile.TemporaryDirectory() as tmp:
+            gaps = {app.id: audit_app(app, real_fetch, PROJECTS, _fresh(app, Path(tmp))) for app in chosen}
+    else:
+        gaps = {app.id: audit_app(app, real_fetch, PROJECTS, args.root) for app in chosen}
     for app_id, found in gaps.items():
         print(f"{app_id}: {len(found)} gap(s)")
         for g in found:

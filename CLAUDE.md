@@ -32,7 +32,7 @@ blocks into their sites, READMEs and the cocode.dk catalogue. Public repository.
 
 ```sh
 bash scripts/gate.sh                     # the gate: pytest (+ ruff when installed)
-python3 -m tools.audit all               # audit every app, rewrite STATUS.md
+python3 -m tools.audit all --fresh       # audit every app (shallow clones of GitHub), rewrite STATUS.md
 python3 -m tools.audit guard-android     # one app
 python3 -m tools.render guard-android    # write the marked blocks into that app's checkout
 python3 -m tools.fdroid_status           # refresh F-Droid states in apps.yml
