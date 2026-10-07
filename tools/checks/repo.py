@@ -101,10 +101,13 @@ def check_inapp(app: App, root: Path) -> list[Gap]:
     code_files = list(main.rglob("*.kt")) + list(main.rglob("*.java"))
     gaps = []
     if not any("about" in f.stem.lower() for f in code_files):
-        gaps.append(gap("no About screen (no source file named *About*)"))
+        gaps.append(gap("no source file named *About* found; check the About screen by hand"))
     texts = [f.read_text("utf-8", "replace") for f in code_files + list(main.rglob("*.xml"))]
-    if not app.privacy or not any(_links_privacy(app.privacy, text) for text in texts):
-        gaps.append(gap(f"the app does not link its privacy policy ({app.privacy or 'no privacy URL in apps.yml'})"))
+    if not app.privacy:
+        gaps.append(gap("apps.yml has no privacy URL, so the app's privacy link could not be checked"))
+    elif not any(_links_privacy(app.privacy, text) for text in texts):
+        gaps.append(gap(f"the privacy URL {app.privacy} was not found in the app's source or resources; "
+                        "check the app's actual link by hand"))
     other = "en" if app.default_language == "da" else "da"
     if not (main / "res" / f"values-{other}").is_dir():
         gaps.append(gap(f"no res/values-{other} (English and Danish are both required)"))

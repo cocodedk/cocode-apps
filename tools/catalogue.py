@@ -18,7 +18,7 @@ WORKS_FILE = PARTIALS / "works.html"
 
 
 def catalogue_html(app: App, cls: str = "index__get") -> str:
-    label = "Hent på F-Droid" if app.fdroid_live else "Hent APK"
+    label = "Hent på F-Droid" if app.fdroid_live else "Hent installationsfilen"
     return f'<a class="{cls}" href="{escape(catalogue_link(app))}">{label}</a>'
 
 
@@ -54,5 +54,6 @@ def check_catalogue(app: App, path: Path | Sequence[Path]) -> list[Gap]:
     paths = [path] if isinstance(path, Path) else list(path)
     marker = f"cocode-apps:get-{app.id}:start"
     if not any(p.is_file() and marker in p.read_text("utf-8") for p in paths):
-        return [Gap(app.id, "cocode.dk", "the cocode.dk catalogue entry has no download link (marker get-<id>)")]
+        return [Gap(app.id, "cocode.dk", f"no cocode-apps marker get-{app.id} found in the cocode.dk "
+                    "catalogue; if the entry already has a download link, put the marker around it")]
     return []

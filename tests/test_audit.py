@@ -22,6 +22,12 @@ def test_status_lists_each_app_with_gap_count_and_gaps():
     assert "| Demo |" in md and "| 1 |" in md and "no sitemap.xml" in md and "2026-10-06" in md
 
 
+def test_status_header_does_not_say_zero_gaps_means_the_standard_is_met():
+    md = status_markdown(parse({"apps": [BASE]}), {}, "2026-10-06")
+    assert "meets the standard" not in md
+    assert "Zero gaps means the automated checks pass; the standard's manual checks still apply." in md
+
+
 def test_audit_app_collects_web_and_repo_gaps(tmp_path):
     app = parse({"apps": [BASE]})[0]
     gaps = audit_app(app, lambda url: (0, ""), tmp_path)

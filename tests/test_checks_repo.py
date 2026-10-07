@@ -104,6 +104,18 @@ def test_inapp_needs_about_screen_privacy_link_and_both_languages(tmp_path):
     assert "About" in messages and "privacy" in messages and "values-en" in messages
 
 
+def test_inapp_messages_say_what_the_check_could_and_could_not_see(tmp_path):
+    src = tmp_path / "app/src/main"
+    (src / "res/values-en").mkdir(parents=True)
+    (src / "res/values-en/strings.xml").write_text("<resources/>")
+    messages = [g.message for g in check_inapp(APP, tmp_path)]
+    privacy = ("the privacy URL https://demo.cocode.dk/privacy/ was not found in the app's source or resources; "
+               "check the app's actual link by hand")
+    assert messages == ["no source file named *About* found; check the About screen by hand", privacy]
+    no_url = parse({"apps": [{**BASE, "privacy": None}]})[0]
+    assert "apps.yml has no privacy URL" in check_inapp(no_url, tmp_path)[1].message
+
+
 def test_privacy_link_built_from_the_site_counts():
     from tools.checks.repo import _links_privacy
     built = 'private const val SITE = "https://demo.cocode.dk/"\nval p = base + "privacy/"'

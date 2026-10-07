@@ -19,7 +19,8 @@ def test_live_app_links_fdroid_in_danish():
 
 def test_app_not_on_fdroid_links_the_apk():
     html = catalogue_html(apps(fdroid="mr:3")[0])
-    assert "releases/latest/download/Demo.apk" in html and "Hent APK" in html and "f-droid" not in html
+    assert "releases/latest/download/Demo.apk" in html and "Hent installationsfilen" in html
+    assert "f-droid" not in html
 
 
 def test_apply_fills_markers_and_skips_private_apps(tmp_path):
@@ -34,7 +35,9 @@ def test_missing_marker_is_reported_and_is_an_audit_gap(tmp_path):
     page = tmp_path / "catalogue.html"
     page.write_text("<li>Demo</li>")
     assert any("missing" in line for line in apply_catalogue(apps(), page))
-    assert "cocode.dk" in check_catalogue(apps()[0], page)[0].message
+    message = check_catalogue(apps()[0], page)[0].message
+    assert "cocode.dk" in message and "marker get-demo" in message
+    assert "already has a download link" in message
 
 
 def test_featured_work_gets_the_work_class_and_counts_as_ok(tmp_path):

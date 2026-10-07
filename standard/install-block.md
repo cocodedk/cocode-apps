@@ -5,9 +5,10 @@
 The same **install block** on every site and in every README, with three parts:
 
 1. The official "Get it on F-Droid" badge linking `https://f-droid.org/packages/<applicationId>/`.
-2. "Download the APK from GitHub", linking
+2. "Download the Android installation file (APK) from GitHub", linking
    `https://github.com/cocodedk/<repo>/releases/latest/download/<apk_asset>`.
-3. Obtainium, for auto-updating the GitHub APK.
+3. "Add the app to Obtainium, an app that keeps it up to date", linking the Obtainium add-app link for
+   the repository.
 
 Before the app is live on F-Droid the badge spot says "Coming to F-Droid", never a dead link.
 
@@ -32,6 +33,6 @@ Before the app is live on F-Droid the badge spot says "Coming to F-Droid", never
 
 ## Example
 
-guard-android has no release yet, so its `GuardAndroid.apk` link does not download and its badge spot
-says "Coming to F-Droid" until the app is accepted. Once `apps.yml` says `live`, `render` swaps the
-badge in; nothing else is edited.
+guard-android has a GitHub release (`v0.1.0`) with `GuardAndroid.apk`, so its download link works. Its
+badge spot says "Coming to F-Droid" until `apps.yml` says `live`; then `render` swaps the badge in and
+nothing else is edited.

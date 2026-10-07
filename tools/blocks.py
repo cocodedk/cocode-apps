@@ -53,7 +53,8 @@ def skip_html(lang: str) -> str:
 
 def nav_html(app: App, lang: str, current: str = "home", skip: bool = True) -> str:
     """The privacy link appears once apps.yml has a privacy URL, the language switch once the app has both
-    languages: no link ever points at a page that does not exist yet. `skip=False` when the page has its own
+    languages: no link ever points at a page that does not exist yet. On the privacy page the language switch
+    opens the other language's privacy page, not its home page. `skip=False` when the page has its own
     skip block first in <body> (a page whose header comes before the navigation)."""
     t, other = TEXT[lang], _other(app, lang)
     home = app.href(lang)
@@ -65,7 +66,8 @@ def nav_html(app: App, lang: str, current: str = "home", skip: bool = True) -> s
 
     icon = f'<img src="{app.base}img/icon.png" alt="" width="32" height="32">'
     privacy = link("privacy", f'href="{home}privacy/"', escape(t["privacy"])) if app.privacy else ""
-    switch = (link("lang", f'href="{app.href(other)}" hreflang="{other}" lang="{other}"',
+    other_page = app.href(other) + ("privacy/" if current == "privacy" else "")  # same page, other language
+    switch = (link("lang", f'href="{other_page}" hreflang="{other}" lang="{other}"',
                    escape(TEXT[other]["lang_name"])) if _bilingual(app) else "")
     return (
         f'<link rel="stylesheet" href="{app.base}css/cocode-nav.css">\n'

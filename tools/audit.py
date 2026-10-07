@@ -29,9 +29,10 @@ def audit_app(app: App, fetch: Fetch, projects: Path, root: Path | None = None) 
 
 
 def status_markdown(apps: list[App], gaps: dict[str, list[Gap]], date: str) -> str:
-    lines = [f"# Status of every Cocode Android app ({date})", "",
-             "Written by `python3 -m tools.audit all`. Fewer gaps is better; 0 meets the standard.", "",
-             "| App | F-Droid | Gaps | What is missing |", "|---|---|---|---|"]
+    note = ("Written by `python3 -m tools.audit all`. Fewer gaps is better. Zero gaps means the automated "
+            "checks pass; the standard's manual checks still apply.")
+    lines = [f"# Status of every Cocode Android app ({date})", "", note, "",
+             "| App | F-Droid | Gaps | What the audit found |", "|---|---|---|---|"]
     for app in apps:
         if app.private:
             lines.append(f"| {app.name_en} | private | – | – |")

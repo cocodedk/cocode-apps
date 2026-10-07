@@ -8,7 +8,7 @@ The owner publishes 16 Android apps (15 public, 1 private) and wants them to rea
 come from **one careful publisher**. An audit on 2026-10-06 found almost no cohesion:
 
 - No site or README links to F-Droid, not even the three apps already published there (Battleship,
-  chess-puzzles, lifemeter). 8 apps have open fdroiddata merge requests, 5 are not submitted.
+  chess-puzzles, lifemeter). 7 apps have open fdroiddata merge requests, 5 are not submitted.
 - 6 apps have no live privacy page; the rest mix `/privacy/` and `privacy.html`; two pages state
   wrong facts (a wrong package name, a wrong app name).
 - 5 apps have an About screen, each laid out differently; none links to its privacy policy.
@@ -64,9 +64,9 @@ cocode-apps/
 `id` (short slug), `name` (en, da), `repo`, `checkout` (local folder under `~/0-projects/`),
 `applicationId`, `site` (URL), `site_dir` (`website` or `docs`), `default_language` (`en` or `da`,
 the language served at `/`; the other one at `/<lang>/`), `privacy` (URL),
-`license` (SPDX), `languages`, `fdroid` (`live` | `mr: <number>` | `none`), `apk_asset` (file name of
+`license` (SPDX), `languages`, `fdroid` (`live` | `mr:<number>` | `none`), `apk_asset` (file name of
 the stable release asset), `obtainium` (bool), `private` (bool; when true only `id`, `name` and
-`private` are kept). The tools are Python 3 with one dependency, PyYAML, to read it.
+`private` are kept). The audit and render tools are Python 3 with one dependency, PyYAML, to read it.
 
 ## The standard (what every app must have)
 
@@ -85,10 +85,10 @@ the stable release asset), `obtainium` (bool), `private` (bool; when true only `
   hidden hamburger menu); touch targets ≥ 44 px; `aria-current` on the current page; a "Skip to
   content" link before the navigation.
 - **Install block**, identical everywhere: (1) the official "Get it on F-Droid" badge linking
-  `https://f-droid.org/packages/<applicationId>/`; (2) "Download the APK from GitHub" linking
-  `https://github.com/cocodedk/<repo>/releases/latest/download/<apk_asset>`; (3) Obtainium for
-  auto-updating the GitHub APK. Before the app is live on F-Droid the badge spot says "Coming to
-  F-Droid" (never a dead link).
+  `https://f-droid.org/packages/<applicationId>/`; (2) "Download the Android installation file (APK) from GitHub"
+  linking `https://github.com/cocodedk/<repo>/releases/latest/download/<apk_asset>`; (3) "Add the app to
+  Obtainium, an app that keeps it up to date" (the GitHub APK then updates itself). Before the app is
+  live on F-Droid the badge spot says "Coming to F-Droid" (never a dead link).
 - **Privacy policy at `/privacy/`** in both languages, with the same headings in every app: summary,
   what is collected, every server the app contacts and why, permissions, what stays on the phone,
   third parties, your rights, contact, changes. Old `privacy.html` paths redirect to it.
@@ -143,7 +143,7 @@ project's scaffold and to `fdroid-release` for submitting to F-Droid, instead of
 2. guard-android as the reference app (closest to the standard already).
 3. The three apps live on F-Droid (Battleship, chess-puzzles, lifemeter): working badges and links
    today, and the cocode.dk catalogue.
-4. The eight apps with open F-Droid MRs.
+4. The seven apps with open F-Droid MRs.
 5. The five not yet submitted.
 6. The Support phase (money, time, tokens).
 
