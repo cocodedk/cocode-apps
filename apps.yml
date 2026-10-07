@@ -156,7 +156,7 @@ apps:
     fdroid: mr:49559
     apk_asset: Parvaz.apk
   - id: persian-calendar
-    name: {en: Persian Calendar, da: Persian Calendar}
+    name: {en: Jalali Persian Calendar, da: Jalali Persian Calendar}
     repo: persian-calendar
     checkout: Calendar
     applicationId: com.cocode.calendar
