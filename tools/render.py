@@ -5,7 +5,7 @@ import argparse
 import shutil
 from pathlib import Path
 
-from tools.blocks import BADGE_FILE, footer_html, install_html, install_md, nav_html
+from tools.blocks import BADGE_FILE, footer_html, install_html, install_md, nav_html, skip_html
 from tools.registry import ROOT, App, find, load
 
 START = "<!-- cocode-apps:{name}:start -->"
@@ -36,7 +36,10 @@ def targets(app: App, root: Path) -> list[tuple[Path, str, str]]:
     out = [(root / "README.md", "install", install_md(app, "en"))]
     for page, lang, is_index in _pages(app, root):
         current = "home" if is_index else "privacy"
-        out += [(page, "nav", nav_html(app, lang, current)), (page, "footer", footer_html(app, lang))]
+        own_skip = page.is_file() and START.format(name="skip") in page.read_text("utf-8")
+        out += [(page, "nav", nav_html(app, lang, current, skip=not own_skip)), (page, "footer", footer_html(app, lang))]
+        if own_skip:
+            out.append((page, "skip", skip_html(lang)))
         if is_index:
             out.append((page, "install", install_html(app, lang)))
     return out

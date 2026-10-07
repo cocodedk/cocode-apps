@@ -90,3 +90,15 @@ def test_root_flag_writes_into_the_given_folder(monkeypatch, tmp_path):
     (tmp_path / "README.md").write_text(f"{S}\n{E}")
     assert render.main(["demo", "--root", str(tmp_path)]) == 0
     assert "f-droid.org/packages/dk.cocode.demo/" in (tmp_path / "README.md").read_text()
+
+
+def test_a_page_with_its_own_skip_block_gets_the_skip_link_first(tmp_path):
+    app = parse({"apps": [BASE]})[0]
+    site = tmp_path / "website"
+    site.mkdir()
+    marks = "".join(f"<!-- cocode-apps:{n}:start --><!-- cocode-apps:{n}:end -->" for n in ("skip", "nav"))
+    (site / "index.html").write_text(f"<body>{marks}<main id=\"main\"></main></body>")
+    apply(app, tmp_path)
+    html = (site / "index.html").read_text()
+    assert html.count('class="skip"') == 1
+    assert html.index('class="skip"') < html.index("cocode-apps:nav:start")
