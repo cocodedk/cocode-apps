@@ -59,6 +59,7 @@ apps:
     site: https://cocodedk.github.io/Claude-Email-App
     site_dir: website
     default_language: en
+    privacy: https://cocodedk.github.io/Claude-Email-App/privacy/
     license: Apache-2.0
     languages: [en, da]
     fdroid: none
@@ -71,6 +72,7 @@ apps:
     site: https://qr.cocode.dk
     site_dir: docs
     default_language: en
+    privacy: https://qr.cocode.dk/privacy/
     license: MIT
     languages: [en, da]
     fdroid: mr:49558
@@ -109,6 +111,7 @@ apps:
     site: https://cocodedk.github.io/fits-qr
     site_dir: website
     default_language: en
+    privacy: https://cocodedk.github.io/fits-qr/privacy/
     license: Apache-2.0
     languages: [en, da]
     fdroid: none
@@ -134,6 +137,7 @@ apps:
     site: https://markdown.cocode.dk
     site_dir: website
     default_language: en
+    privacy: https://markdown.cocode.dk/privacy/
     license: Apache-2.0
     languages: [en, da]
     fdroid: none
@@ -146,6 +150,7 @@ apps:
     site: https://parvaz.cocode.dk
     site_dir: website
     default_language: en
+    privacy: https://parvaz.cocode.dk/privacy/
     license: MIT
     languages: [en, da]
     fdroid: mr:49559
@@ -184,6 +189,7 @@ apps:
     site: https://weather.cocode.dk
     site_dir: website
     default_language: en
+    privacy: https://weather.cocode.dk/privacy/
     license: Apache-2.0
     languages: [en, da]
     fdroid: mr:49432
