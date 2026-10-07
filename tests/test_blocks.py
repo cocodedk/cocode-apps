@@ -84,8 +84,9 @@ def test_stylesheet_sizes_wraps_and_shows_the_skip_link():
     assert "flex: 1 0 100%" in rules[".cocode-nav .brand"]
     assert "justify-content: flex-start" in rules[".cocode-nav .brand"]
     assert "@media (min-width: 48em)" in rules  # one row on wide screens
-    assert re.search(r"left:\s*-\d{4,}px", rules[".skip"])
-    assert re.search(r"left:\s*0\b", rules[".skip:focus"])
+    assert "clip-path: inset(50%)" in rules[".skip"] and "left" not in rules[".skip"]  # no off-page shove (RTL)
+    assert "clip-path: none" in rules[".skip:focus"]
+    assert "margin-right" not in "".join(rules.values())  # logical properties only, so RTL pages work
 
 
 def test_stylesheet_focus_uses_current_colour_and_nothing_hides_or_colours():
