@@ -4,4 +4,4 @@ __pycache__/
 .venv/
 scratchpad/
 .zvec-grep/
-memory/
+memory
